@@ -32329,7 +32329,7 @@ $S:0}
 A.a3n.prototype={
 $1(a){var s=null,r=A.O8(20),q=t.w,p=A.bV(a,s,q).w
 q=A.bV(a,s,q).w
-return new A.mQ(A.nk(s,A.ZG("This is an alert dialog.",s),B.K,s,s,s,s,q.a.a*0.9,s,s,s,s,s,p.a.a*0.9),A.b([new A.B3(new A.a3m(a),s,s,s,s,B.K,s,!1,s,A.ZG("OK",s),s)],t.W),new A.bI(r,B.y),s)},
+return new A.mQ(A.nk(s,A.ZG("This is an alert dialog.",s),B.K,s,s,s,s,q.a.a,s,s,s,s,s,p.a.a),A.b([new A.B3(new A.a3m(a),s,s,s,s,B.K,s,!1,s,A.ZG("OK",s),s)],t.W),new A.bI(r,B.y),s)},
 $S:177}
 A.a3m.prototype={
 $0(){A.tu(this.a,!1).fq()},
