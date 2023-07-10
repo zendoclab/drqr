@@ -38,8 +38,7 @@ dependencies:
   flex_color_scheme: ^7.1.2
   google_fonts: ^5.1.0
   flutter_reorderable_grid_view: ^4.0.0
-  responsive_grid: ^2.4.1
-  auto_height_grid_view: ^1.0.0
+  side_sheet: ^1.0.4
 
 dev_dependencies:
   flutter_test:

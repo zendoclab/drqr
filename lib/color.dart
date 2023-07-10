@@ -2,7 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const _seedColor = FlexScheme.blueM3;
+const _seedColor = FlexScheme.limeM3;
 
 ThemeData light = FlexThemeData.light(
   scheme: _seedColor,
@@ -40,6 +40,7 @@ ThemeData light = FlexThemeData.light(
   visualDensity: FlexColorScheme.comfortablePlatformDensity,
   useMaterial3: true,
   swapLegacyOnMaterial3: true,
+  fontFamily: GoogleFonts.montserrat().fontFamily
 );
 
 ThemeData dark = FlexThemeData.dark(
@@ -78,5 +79,5 @@ ThemeData dark = FlexThemeData.dark(
   visualDensity: FlexColorScheme.comfortablePlatformDensity,
   useMaterial3: true,
   swapLegacyOnMaterial3: true,
-  fontFamily: GoogleFonts.nanumGothicCoding().fontFamily
+  fontFamily: GoogleFonts.montserrat().fontFamily
 );
