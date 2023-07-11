@@ -661,7 +661,7 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(width: 2.0,),
               Tooltip(
                 message:
-                locale.languageCode=='ko' ? '고객에게 QR코드로 웹페이지의 정보를 전달하세요' : 'Give customers information from webpage with QR Codes',
+                locale.languageCode=='ko' ? '고객에게 QR코드로 웹페이지의 정보를 전달하세요\n링크목록은 웹브라우저에 영구적으로 저장됩니다\n링크박스를 길게 누르면 목록순서를 바꿀 수 있습니다' : 'Give customers information from webpage with QR Codes\nList of links is permanently stored in the web browser\nYou can change the order of list by long-pressing the link box',
                 child: Align(
                     alignment: Alignment
                         .topRight,
@@ -676,35 +676,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
       ),
       body: ReorderableBuilder(
-        lockedIndices: [_fruits.length],
-        scrollController: _scrollController,
-        longPressDelay: const Duration(milliseconds: 300),
-        enableScrollingWhileDragging: true,
-        enableDraggable: true,
-        children: generatedChildren,
-        onReorder: (List<OrderUpdateEntity> orderUpdateEntities) {
-          for (final orderUpdateEntity in orderUpdateEntities) {
-            final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
-            _fruits.insert(orderUpdateEntity.newIndex, fruit);
-            final temp = links?[orderUpdateEntity.oldIndex];
-            links?[orderUpdateEntity.oldIndex] =
-                links?[orderUpdateEntity.newIndex];
-            links?[orderUpdateEntity.newIndex] = temp;
-            linktoqrcode?.put('links', links);
-          }
-        },
-        builder: (children) {
-          return GridView(
-              key: _gridViewKey,
-              controller: _scrollController,
-              padding: const EdgeInsets.all(8.0),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  mainAxisSpacing: 8.0,
-                  crossAxisSpacing: 8.0,
-                  childAspectRatio: 2,
-                  maxCrossAxisExtent: 100),
-              children: children);
-        },
+          lockedIndices: [_fruits.length],
+          scrollController: _scrollController,
+          longPressDelay: const Duration(milliseconds: 300),
+          enableScrollingWhileDragging: true,
+          enableDraggable: true,
+          children: generatedChildren,
+          onReorder: (List<OrderUpdateEntity> orderUpdateEntities) {
+            for (final orderUpdateEntity in orderUpdateEntities) {
+              final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
+              _fruits.insert(orderUpdateEntity.newIndex, fruit);
+              final temp = links?[orderUpdateEntity.oldIndex];
+              links?[orderUpdateEntity.oldIndex] =
+                  links?[orderUpdateEntity.newIndex];
+              links?[orderUpdateEntity.newIndex] = temp;
+              linktoqrcode?.put('links', links);
+            }
+          },
+          builder: (children) {
+            return GridView(
+                key: _gridViewKey,
+                controller: _scrollController,
+                padding: const EdgeInsets.all(8.0),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisSpacing: 8.0,
+                    crossAxisSpacing: 8.0,
+                    childAspectRatio: 2,
+                    maxCrossAxisExtent: 100),
+                children: children);
+          },
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
