@@ -2,7 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const _seedColor = FlexScheme.limeM3;
+const _seedColor = FlexScheme.greyLaw;
 
 ThemeData light = FlexThemeData.light(
   scheme: _seedColor,
