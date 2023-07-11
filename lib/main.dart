@@ -95,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _checkVal = false;
   bool _checkVal2 = false;
+  bool _edit = false;
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: const Alignment(0, 0),
                 color: Theme.of(context).colorScheme.outlineVariant,
                 child: InkResponse(
-                    onTap: () {
-                      SideSheet.right(
+                    onTap: () async {
+                      await SideSheet.right(
                           sheetColor:
                               Theme.of(context).colorScheme.surfaceVariant,
                           sheetBorderRadius: 16.0,
@@ -129,18 +130,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 children: [
                                                   IconButton(
                                                       icon: Icon(Icons.close),
-                                                      onPressed: () => Navigator.pop(
-                                                          context,
-                                                          'Data returns from right side sheet')),
+                                                      onPressed: () =>
+                                                          Navigator.pop(context,
+                                                              'Data returns from right side sheet')),
                                                   Divider(),
                                                   const SizedBox(height: 8.0),
                                                   Align(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       child: Text("링크 추가",
                                                           style: TextStyle(
                                                               fontSize: 16,
                                                               fontWeight:
-                                                                  FontWeight.bold))),
+                                                                  FontWeight
+                                                                      .bold))),
                                                   const SizedBox(height: 8.0),
                                                   TextFormField(
                                                     autovalidateMode:
@@ -166,9 +169,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     },
                                                     maxLength: 20,
                                                     maxLengthEnforcement:
-                                                        MaxLengthEnforcement.enforced,
-                                                    decoration: const InputDecoration(
-                                                      border: OutlineInputBorder(),
+                                                        MaxLengthEnforcement
+                                                            .enforced,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(),
                                                       hintText: '링크 제목',
                                                       helperText: null,
                                                       labelText: null,
@@ -198,8 +204,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       }
                                                     },
                                                     maxLength: 200,
-                                                    decoration: const InputDecoration(
-                                                      border: OutlineInputBorder(),
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(),
                                                       hintText: '웹 주소',
                                                       helperText: null,
                                                       labelText: null,
@@ -209,7 +217,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   const SizedBox(height: 16.0),
                                                   Row(
                                                     children: [
-                                                      const SizedBox(width: 4.0),
+                                                      const SizedBox(
+                                                          width: 4.0),
                                                       Checkbox(
                                                           value: _checkVal,
                                                           onChanged: (val) {
@@ -222,10 +231,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         message:
                                                             '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
                                                         child: Align(
-                                                            alignment:
-                                                                Alignment.topRight,
+                                                            alignment: Alignment
+                                                                .topRight,
                                                             child: Icon(
-                                                                Icons.info_outline,
+                                                                Icons
+                                                                    .info_outline,
                                                                 size: 16.0)),
                                                       ),
                                                     ],
@@ -235,44 +245,58 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     alignment: Alignment.center,
                                                     child: ElevatedButton(
                                                       onPressed: () async {
-                                                        if (formKey.currentState!
+                                                        if (formKey
+                                                            .currentState!
                                                             .validate()) {
                                                           formKey.currentState
                                                               ?.save();
-                                                          if(links.isNull) {links = [
-                                                            {
+                                                          if (links.isNull) {
+                                                            links = [
+                                                              {
+                                                                "subject":
+                                                                    _controller
+                                                                        .text,
+                                                                "web":
+                                                                    _controller2
+                                                                        .text,
+                                                                "open":
+                                                                    _checkVal
+                                                              }
+                                                            ];
+                                                          } else {
+                                                            links?.add({
                                                               "subject":
-                                                              _controller.text,
+                                                                  _controller
+                                                                      .text,
                                                               "web":
-                                                              _controller2.text,
+                                                                  _controller2
+                                                                      .text,
                                                               "open": _checkVal
-                                                            }
-                                                          ];} else {
-                                                          links?.add(
-                                                            {
-                                                              "subject":
-                                                                  _controller.text,
-                                                              "web":
-                                                                  _controller2.text,
-                                                              "open": _checkVal
-                                                            }
-                                                          ); }
+                                                            });
+                                                          }
                                                           linktoqrcode?.put(
                                                               'links', links);
                                                           setState(() {
-                                                            _fruits.add(_controller.text);
+                                                            _fruits.add(
+                                                                _controller
+                                                                    .text);
                                                             _checkVal = false;
                                                             _controller.clear();
-                                                            _controller2.clear();
+                                                            _controller2
+                                                                .clear();
                                                           });
-                                                          Navigator.pop(context, '');
+                                                          Navigator.pop(
+                                                              context, '');
                                                           ScaffoldMessenger.of(
                                                                   context)
                                                               .showSnackBar(
                                                             const SnackBar(
-                                                              duration: Duration(
-                                                                  seconds: 1),
-                                                              content: Text('링크 입력됨'),
+                                                              duration:
+                                                                  Duration(
+                                                                      seconds:
+                                                                          1),
+                                                              content: Text(
+                                                                  '링크 입력됨'),
                                                               // action: SnackBarAction(label: '확인', onPressed: () {}),
                                                             ),
                                                           );
@@ -286,6 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                           context: context);
+                      _checkVal = _checkVal2 = _edit = false;
                     },
                     child: Icon(Icons.add)))
             : Container(
@@ -294,11 +319,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: const Alignment(0, 0),
                 color: Theme.of(context).colorScheme.outlineVariant,
                 child: InkResponse(
-                    onTap: () {
+                    onTap: () async {
                       _controller3.text = links?[index]['subject'];
                       _controller4.text = links?[index]['web'];
                       _checkVal2 = links?[index]['open'];
-                      SideSheet.right(
+                      await SideSheet.right(
                           sheetColor: Theme.of(context).colorScheme.surface,
                           sheetBorderRadius: 16.0,
                           barrierDismissible: true,
@@ -308,178 +333,302 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: [
                                 StatefulBuilder(
                                     builder: (BuildContext context,
-                                        StateSetter myState2) =>
+                                            StateSetter myState2) =>
                                         Form(
                                             key: formKey2,
                                             child: Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   IconButton(
                                                       icon: Icon(Icons.close),
-                                                      onPressed: () => Navigator.pop(
-                                                          context,
-                                                          'Data returns from right side sheet')),
+                                                      onPressed: () =>
+                                                          Navigator.pop(context,
+                                                              'Data returns from right side sheet')),
                                                   Divider(),
-                                                  const SizedBox(height: 8.0),
-                                                  Align(
-                                                      alignment: Alignment.center,
-                                                      child: Text(_controller3.text,
-                                                          style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                              FontWeight.bold))),
-                                                  const SizedBox(height: 8.0),
-                                                  Align(
-                                                      alignment: Alignment.center,
-                                                      child: PrettyQr(
-                                                    typeNumber: null,
-                                                    size: 300,
-                                                    data: links?[index]['web'],
-                                                    errorCorrectLevel: QrErrorCorrectLevel.M,
-                                                    roundEdges: true,
-                                                  )),
-                                                  const SizedBox(height: 16.0),
-
-                                                  ExpansionTile(title: Text("링크 수정"), children: [
-
-                                                    TextFormField(
-                                                      autovalidateMode:
-                                                      AutovalidateMode.always,
-                                                      controller: _controller3,
-                                                      onSaved: (val) {
-                                                        setState(() {});
-                                                      },
-                                                      validator: (val) {
-                                                        if (val!.isEmpty ||
-                                                            val.length > 20 ||
-                                                            RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
-                                                                .hasMatch(val)) {
-                                                          return '특수문자는 제한됩니다';
-                                                        }
-                                                        return null;
-                                                      },
-                                                      onTap: () {
-                                                        if (FocusScope.of(context)
-                                                            .hasFocus) {
-                                                          setState(() {});
-                                                        }
-                                                      },
-                                                      maxLength: 20,
-                                                      maxLengthEnforcement:
-                                                      MaxLengthEnforcement.enforced,
-                                                      decoration: const InputDecoration(
-                                                        border: OutlineInputBorder(),
-                                                        hintText: '링크 제목',
-                                                        helperText: null,
-                                                        labelText: null,
-                                                      ),
-                                                      maxLines: 1,
-                                                    ),
-                                                    const SizedBox(height: 16.0),
-                                                    TextFormField(
-                                                      autovalidateMode:
-                                                      AutovalidateMode.always,
-                                                      controller: _controller4,
-                                                      onSaved: (val) {
-                                                        setState(() {});
-                                                      },
-                                                      validator: (val) {
-                                                        if (val!.isEmpty ||
-                                                            !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
-                                                                .hasMatch(val)) {
-                                                          return '올바른 웹주소를 입력하세요';
-                                                        }
-                                                        return null;
-                                                      },
-                                                      onTap: () {
-                                                        if (FocusScope.of(context)
-                                                            .hasFocus) {
-                                                          setState(() {});
-                                                        }
-                                                      },
-                                                      maxLength: 200,
-                                                      decoration: const InputDecoration(
-                                                        border: OutlineInputBorder(),
-                                                        hintText: '웹 주소',
-                                                        helperText: null,
-                                                        labelText: null,
-                                                      ),
-                                                      maxLines: 1,
-                                                    ),
-                                                    const SizedBox(height: 16.0),
-                                                    Row(
-                                                      children: [
-                                                        const SizedBox(width: 4.0),
-                                                        Checkbox(
-                                                            value: _checkVal2,
-                                                            onChanged: (val) {
-                                                              myState2(() {
-                                                                _checkVal2 = val!;
-                                                              });
-                                                            }),
-                                                        Text("공개"),
-                                                        Tooltip(
-                                                          message:
-                                                          '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
-                                                          child: Align(
+                                                  _edit
+                                                      ? Container(
+                                                          height: 0.0,
+                                                        )
+                                                      : Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            const SizedBox(
+                                                                height: 8.0),
+                                                            Align(
                                                               alignment:
-                                                              Alignment.topRight,
-                                                              child: Icon(
-                                                                  Icons.info_outline,
-                                                                  size: 16.0)),
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                  _controller3
+                                                                      .text,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          16,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold)),
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 8.0),
+                                                            Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: PrettyQr(
+                                                                  typeNumber:
+                                                                      null,
+                                                                  size: 300,
+                                                                  data: links?[
+                                                                          index]
+                                                                      ['web'],
+                                                                  errorCorrectLevel:
+                                                                      QrErrorCorrectLevel
+                                                                          .M,
+                                                                  roundEdges:
+                                                                      true,
+                                                                )),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 8.0),
-                                                    Align(
-                                                      alignment: Alignment.center,
-                                                      child: ElevatedButton(
-                                                        onPressed: () async {
-                                                          if (formKey2.currentState!
-                                                              .validate()) {
-                                                            formKey2.currentState
-                                                                ?.save();
-                                                              links?[index] =
-                                                                  {
-                                                                    "subject":
-                                                                    _controller3.text,
-                                                                    "web":
-                                                                    _controller4.text,
-                                                                    "open": _checkVal2
-                                                                  };
-                                                            linktoqrcode?.put(
-                                                                'links', links);
-                                                            setState(() {
-                                                              _fruits[index]=_controller3.text;
-                                                              _checkVal2 = false;
-                                                              _controller3.clear();
-                                                              _controller4.clear();
-                                                            });
-                                                            Navigator.pop(context, '');
-                                                            ScaffoldMessenger.of(
-                                                                context)
-                                                                .showSnackBar(
-                                                              const SnackBar(
-                                                                duration: Duration(
-                                                                    seconds: 1),
-                                                                content: Text('링크 수정됨'),
-                                                                // action: SnackBarAction(label: '확인', onPressed: () {}),
-                                                              ),
-                                                            );
+                                                  const SizedBox(height: 16.0),
+                                                  ExpansionTile(
+                                                    title: Text("링크 수정"),
+                                                    onExpansionChanged: (val) {
+                                                      myState2(() {
+                                                        _edit = val!;
+                                                      });
+                                                    },
+                                                    children: [
+                                                      TextFormField(
+                                                        autovalidateMode:
+                                                            AutovalidateMode
+                                                                .always,
+                                                        controller:
+                                                            _controller3,
+                                                        onSaved: (val) {
+                                                          setState(() {});
+                                                        },
+                                                        validator: (val) {
+                                                          if (val!.isEmpty ||
+                                                              val.length > 20 ||
+                                                              RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
+                                                                  .hasMatch(
+                                                                      val)) {
+                                                            return '특수문자는 제한됩니다';
+                                                          }
+                                                          return null;
+                                                        },
+                                                        onTap: () {
+                                                          if (FocusScope.of(
+                                                                  context)
+                                                              .hasFocus) {
+                                                            setState(() {});
                                                           }
                                                         },
-                                                        child: const Text('수정'),
+                                                        maxLength: 20,
+                                                        maxLengthEnforcement:
+                                                            MaxLengthEnforcement
+                                                                .enforced,
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border:
+                                                              OutlineInputBorder(),
+                                                          hintText: '링크 제목',
+                                                          helperText: null,
+                                                          labelText: null,
+                                                        ),
+                                                        maxLines: 1,
                                                       ),
-                                                    )
+                                                      const SizedBox(
+                                                          height: 16.0),
+                                                      TextFormField(
+                                                        autovalidateMode:
+                                                            AutovalidateMode
+                                                                .always,
+                                                        controller:
+                                                            _controller4,
+                                                        onSaved: (val) {
+                                                          setState(() {});
+                                                        },
+                                                        validator: (val) {
+                                                          if (val!.isEmpty ||
+                                                              !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
+                                                                  .hasMatch(
+                                                                      val)) {
+                                                            return '올바른 웹주소를 입력하세요';
+                                                          }
+                                                          return null;
+                                                        },
+                                                        onTap: () {
+                                                          if (FocusScope.of(
+                                                                  context)
+                                                              .hasFocus) {
+                                                            setState(() {});
+                                                          }
+                                                        },
+                                                        maxLength: 200,
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border:
+                                                              OutlineInputBorder(),
+                                                          hintText: '웹 주소',
+                                                          helperText: null,
+                                                          labelText: null,
+                                                        ),
+                                                        maxLines: 1,
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 16.0),
+                                                      Row(
+                                                        children: [
+                                                          const SizedBox(
+                                                              width: 4.0),
+                                                          Checkbox(
+                                                              value: _checkVal2,
+                                                              onChanged: (val) {
+                                                                myState2(() {
+                                                                  _checkVal2 =
+                                                                      val!;
+                                                                });
+                                                              }),
+                                                          Text("공개"),
+                                                          Tooltip(
+                                                            message:
+                                                                '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
+                                                            child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .topRight,
+                                                                child: Icon(
+                                                                    Icons
+                                                                        .info_outline,
+                                                                    size:
+                                                                        16.0)),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 8.0),
+                                                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                        children: [
+                                                          Align(
+                                                            alignment:
+                                                            Alignment.center,
+                                                            child: ElevatedButton(
+                                                              onPressed: () async {
+                                                                if (formKey2
+                                                                    .currentState!
+                                                                    .validate()) {
+                                                                  formKey2
+                                                                      .currentState
+                                                                      ?.save();
+                                                                  links?.removeAt(index);
 
-                                                  ],),
+                                                                  linktoqrcode?.put(
+                                                                      'links',
+                                                                      links);
 
+                                                                  setState(() {
+                                                                    _fruits.removeAt(index);
+                                                                    _checkVal2 =
+                                                                    false;
+                                                                    _controller3
+                                                                        .clear();
+                                                                    _controller4
+                                                                        .clear();
+                                                                  });
+
+                                                                  Navigator.pop(
+                                                                      context, '');
+                                                                  ScaffoldMessenger
+                                                                      .of(context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      duration:
+                                                                      Duration(
+                                                                          seconds:
+                                                                          1),
+                                                                      content: Text(
+                                                                          '링크 삭제됨'),
+                                                                      // action: SnackBarAction(label: '확인', onPressed: () {}),
+                                                                    ),
+                                                                  );
+                                                                }
+                                                              },
+                                                              child:
+                                                              const Text('삭제'),
+                                                            ),
+                                                          ),
+                                                          Align(
+                                                            alignment:
+                                                                Alignment.center,
+                                                            child: ElevatedButton(
+                                                              onPressed: () async {
+                                                                if (formKey2
+                                                                    .currentState!
+                                                                    .validate()) {
+                                                                  formKey2
+                                                                      .currentState
+                                                                      ?.save();
+                                                                  links?[index] = {
+                                                                    "subject":
+                                                                        _controller3
+                                                                            .text,
+                                                                    "web":
+                                                                        _controller4
+                                                                            .text,
+                                                                    "open":
+                                                                        _checkVal2
+                                                                  };
+                                                                  linktoqrcode?.put(
+                                                                      'links',
+                                                                      links);
+                                                                  setState(() {
+                                                                    _fruits[index] =
+                                                                        _controller3
+                                                                            .text;
+                                                                    _checkVal2 =
+                                                                        false;
+                                                                    _controller3
+                                                                        .clear();
+                                                                    _controller4
+                                                                        .clear();
+                                                                  });
+                                                                  Navigator.pop(
+                                                                      context, '');
+                                                                  ScaffoldMessenger
+                                                                          .of(context)
+                                                                      .showSnackBar(
+                                                                    const SnackBar(
+                                                                      duration:
+                                                                          Duration(
+                                                                              seconds:
+                                                                                  1),
+                                                                      content: Text(
+                                                                          '링크 수정됨'),
+                                                                      // action: SnackBarAction(label: '확인', onPressed: () {}),
+                                                                    ),
+                                                                  );
+                                                                }
+                                                              },
+                                                              child:
+                                                                  const Text('수정'),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 8.0),
+                                                    ],
+                                                  ),
                                                 ]))),
                               ],
                             ),
                           ),
                           context: context);
+                      _checkVal = _checkVal2 = _edit = false;
                     },
                     child: Text(_fruits.elementAt(index),
                         style: TextStyle(
@@ -505,6 +654,11 @@ class _MyHomePageState extends State<MyHomePage> {
           for (final orderUpdateEntity in orderUpdateEntities) {
             final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
             _fruits.insert(orderUpdateEntity.newIndex, fruit);
+            final temp = links?[orderUpdateEntity.oldIndex];
+            links?[orderUpdateEntity.oldIndex] =
+                links?[orderUpdateEntity.newIndex];
+            links?[orderUpdateEntity.newIndex] = temp;
+            linktoqrcode?.put('links', links);
           }
         },
         builder: (children) {
