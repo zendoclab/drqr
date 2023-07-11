@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       theme: light,
       darkTheme: dark,
       themeMode: ThemeMode.light,
-      home: const MyHomePage(title: '닥터큐알'),
+      home: const MyHomePage(title: 'drqr'),
       builder: (BuildContext context, Widget? child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
         child: child!,
@@ -61,6 +61,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   List<String> _fruits = [];
   late List? links;
   final _gridViewKey = GlobalKey();
@@ -72,10 +73,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final _controller3 = TextEditingController();
   final _controller4 = TextEditingController();
 
+
   @override
   void initState() {
     super.initState();
-
     if (linktoqrcode.isNull) {
       links = null;
     } else {
@@ -99,6 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = View.of(context).platformDispatcher.locale;
+
+
     final generatedChildren = List.generate(
         _fruits.length + 1,
         (index) => index == _fruits.length
@@ -106,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 key: Key("$index"),
                 height: (((index + 1) % 3) + 1) * 100.0,
                 alignment: const Alignment(0, 0),
-                color: Theme.of(context).colorScheme.outlineVariant,
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 child: InkResponse(
                     onTap: () async {
                       await SideSheet.right(
@@ -114,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Theme.of(context).colorScheme.surfaceVariant,
                           sheetBorderRadius: 16.0,
                           barrierDismissible: true,
-                          barrierLabel: '링크 입력',
+                          barrierLabel: 'Add Link',
                           width: MediaQuery.of(context).size.width * 0.98,
                           body: SingleChildScrollView(
                             child: Column(
@@ -132,18 +136,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       icon: const Icon(Icons.close),
                                                       onPressed: () =>
                                                           Navigator.pop(context,
-                                                              'Data returns from right side sheet')),
+                                                              'links to qrcode')),
                                                   const Divider(),
                                                   const SizedBox(height: 8.0),
-                                                  const Align(
+                                                  Align(
                                                       alignment:
                                                           Alignment.center,
-                                                      child: Text("링크 추가",
+                                                      child: locale.languageCode=='ko' ? const Text("링크 추가",
                                                           style: TextStyle(
                                                               fontSize: 16,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .bold))),
+                                                                      .bold)) : const Text("Add Link",
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .bold))
+
+                                                  ),
                                                   const SizedBox(height: 8.0),
                                                   TextFormField(
                                                     autovalidateMode:
@@ -157,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           val.length > 20 ||
                                                           RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
                                                               .hasMatch(val)) {
-                                                        return '특수문자는 제한됩니다';
+                                                        return locale.languageCode=='ko' ? '링크 제목을 입력하세요 (특수문자 제한)': 'Enter a link title (special characters restricted)';
                                                       }
                                                       return null;
                                                     },
@@ -175,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         const InputDecoration(
                                                       border:
                                                           OutlineInputBorder(),
-                                                      hintText: '링크 제목',
+                                                          hintText: 'Link title',
                                                       helperText: null,
                                                       labelText: null,
                                                     ),
@@ -193,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       if (val!.isEmpty ||
                                                           !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
                                                               .hasMatch(val)) {
-                                                        return '올바른 웹주소를 입력하세요';
+                                                        return locale.languageCode=='ko' ? '올바른 웹페이지 주소를 입력 하세요' : 'Enter a valid web page address';
                                                       }
                                                       return null;
                                                     },
@@ -208,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         const InputDecoration(
                                                       border:
                                                           OutlineInputBorder(),
-                                                      hintText: '웹 주소',
+                                                      hintText: 'Web page address',
                                                       helperText: null,
                                                       labelText: null,
                                                     ),
@@ -226,11 +237,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               _checkVal = val!;
                                                             });
                                                           }),
-                                                      const Text("공개"),
-                                                      const Tooltip(
+                                                      locale.languageCode=='ko' ? const Text("공개") :  const Text("Publicly"),
+                                                      Tooltip(
                                                         message:
-                                                            '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
-                                                        child: Align(
+                                                        locale.languageCode=='ko' ? '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다' : 'Publicly available links will be used for search, sharing, and customer convenience' ,
+
+                                                        child: const Align(
                                                             alignment: Alignment
                                                                 .topRight,
                                                             child: Icon(
@@ -290,19 +302,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           ScaffoldMessenger.of(
                                                                   context)
                                                               .showSnackBar(
-                                                            const SnackBar(
+                                                            SnackBar(
                                                               duration:
-                                                                  Duration(
+                                                                  const Duration(
                                                                       seconds:
                                                                           1),
-                                                              content: Text(
-                                                                  '링크 입력됨'),
+                                                              content: locale.languageCode=='ko' ? const Text(
+                                                                  '링크 입력됨') : const Text("Link submitted"),
                                                               // action: SnackBarAction(label: '확인', onPressed: () {}),
                                                             ),
                                                           );
                                                         }
                                                       },
-                                                      child: const Text('입력'),
+                                                      child: locale.languageCode=='ko' ? const Text('입력') : const Text('Submit'),
                                                     ),
                                                   )
                                                 ]))),
@@ -344,7 +356,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       icon: const Icon(Icons.close),
                                                       onPressed: () =>
                                                           Navigator.pop(context,
-                                                              'Data returns from right side sheet')),
+                                                              'links to qrcode')),
                                                   const Divider(),
                                                   _edit
                                                       ? Container(
@@ -394,7 +406,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         ),
                                                   const SizedBox(height: 16.0),
                                                   ExpansionTile(
-                                                    title: const Text("링크 수정"),
+                                                    title: locale.languageCode=='ko' ? const Text("링크 수정") : const Text("Link Modified"),
                                                     onExpansionChanged: (val) {
                                                       myState2(() {
                                                         _edit = val;
@@ -416,7 +428,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
                                                                   .hasMatch(
                                                                       val)) {
-                                                            return '특수문자는 제한됩니다';
+                                                            return locale.languageCode=='ko' ? '링크 제목을 입력하세요 (특수문자 제한)': 'Enter a link title (special characters restricted)';
                                                           }
                                                           return null;
                                                         },
@@ -435,7 +447,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             const InputDecoration(
                                                           border:
                                                               OutlineInputBorder(),
-                                                          hintText: '링크 제목',
+                                                          hintText: 'Link title',
                                                           helperText: null,
                                                           labelText: null,
                                                         ),
@@ -457,7 +469,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
                                                                   .hasMatch(
                                                                       val)) {
-                                                            return '올바른 웹주소를 입력하세요';
+                                                            return locale.languageCode=='ko' ? '올바른 웹페이지 주소를 입력 하세요' : 'Enter a valid web page address';
                                                           }
                                                           return null;
                                                         },
@@ -473,7 +485,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             const InputDecoration(
                                                           border:
                                                               OutlineInputBorder(),
-                                                          hintText: '웹 주소',
+                                                          hintText: 'Web page address',
                                                           helperText: null,
                                                           labelText: null,
                                                         ),
@@ -493,11 +505,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                       val!;
                                                                 });
                                                               }),
-                                                          const Text("공개"),
-                                                          const Tooltip(
+                                                          locale.languageCode=='ko' ? const Text("공개") : const Text("Publicly"),
+                                                          Tooltip(
                                                             message:
-                                                                '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
-                                                            child: Align(
+                                                            locale.languageCode=='ko' ? '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다' : 'Publicly available links will be used for search, sharing, and customer convenience' ,
+                                                            child: const Align(
                                                                 alignment:
                                                                     Alignment
                                                                         .topRight,
@@ -545,20 +557,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   ScaffoldMessenger
                                                                       .of(context)
                                                                       .showSnackBar(
-                                                                    const SnackBar(
+                                                                    SnackBar(
                                                                       duration:
-                                                                      Duration(
+                                                                      const Duration(
                                                                           seconds:
                                                                           1),
-                                                                      content: Text(
-                                                                          '링크 삭제됨'),
+                                                                      content: locale.languageCode=='ko' ? const Text(
+                                                                          '링크 삭제됨') : const Text('Link deleted'),
                                                                       // action: SnackBarAction(label: '확인', onPressed: () {}),
                                                                     ),
                                                                   );
                                                                 }
                                                               },
                                                               child:
-                                                              const Text('삭제'),
+                                                              locale.languageCode=='ko' ? const Text('삭제') : const Text('Delete'),
                                                             ),
                                                           ),
                                                           Align(
@@ -601,20 +613,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   ScaffoldMessenger
                                                                           .of(context)
                                                                       .showSnackBar(
-                                                                    const SnackBar(
+                                                                    SnackBar(
                                                                       duration:
-                                                                          Duration(
+                                                                          const Duration(
                                                                               seconds:
                                                                                   1),
-                                                                      content: Text(
-                                                                          '링크 수정됨'),
+                                                                      content: locale.languageCode=='ko' ? const Text(
+                                                                          '링크 수정됨') : const Text(
+                                                                          'Link modified'),
                                                                       // action: SnackBarAction(label: '확인', onPressed: () {}),
                                                                     ),
                                                                   );
                                                                 }
                                                               },
                                                               child:
-                                                                  const Text('수정'),
+                                                              locale.languageCode=='ko' ? const Text('수정') : const Text('Edit'),
                                                             ),
                                                           ),
                                                         ],
@@ -631,7 +644,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       _checkVal = _checkVal2 = _edit = false;
                     },
                     child: Text(_fruits.elementAt(index),
-                        style: const TextStyle(
+                        style: TextStyle(
+                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             height: 0.8)))));
@@ -639,9 +653,27 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title,
-            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        backgroundColor: Theme.of(context).colorScheme.inverseSurface,
+        title: Row(
+            children: [
+              Text(widget.title,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onInverseSurface)),
+              const SizedBox(width: 2.0,),
+              Tooltip(
+                message:
+                locale.languageCode=='ko' ? '고객에게 QR코드로 웹페이지의 정보를 전달하세요' : 'Give customers information from webpage with QR Codes',
+                child: Align(
+                    alignment: Alignment
+                        .topRight,
+                    child: Icon(
+                        Icons
+                            .info_outline,
+                        size: 16.0,
+                        color: Theme.of(context).colorScheme.onInverseSurface
+                    )),
+              ),
+            ],
+          ),
       ),
       body: ReorderableBuilder(
         lockedIndices: [_fruits.length],
