@@ -129,13 +129,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   IconButton(
-                                                      icon: Icon(Icons.close),
+                                                      icon: const Icon(Icons.close),
                                                       onPressed: () =>
                                                           Navigator.pop(context,
                                                               'Data returns from right side sheet')),
-                                                  Divider(),
+                                                  const Divider(),
                                                   const SizedBox(height: 8.0),
-                                                  Align(
+                                                  const Align(
                                                       alignment:
                                                           Alignment.center,
                                                       child: Text("링크 추가",
@@ -226,8 +226,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               _checkVal = val!;
                                                             });
                                                           }),
-                                                      Text("공개"),
-                                                      Tooltip(
+                                                      const Text("공개"),
+                                                      const Tooltip(
                                                         message:
                                                             '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
                                                         child: Align(
@@ -312,7 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context: context);
                       _checkVal = _checkVal2 = _edit = false;
                     },
-                    child: Icon(Icons.add)))
+                    child: const Icon(Icons.add)))
             : Container(
                 key: Key("$index"),
                 height: (((index + 1) % 3) + 1) * 100.0,
@@ -341,11 +341,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   IconButton(
-                                                      icon: Icon(Icons.close),
+                                                      icon: const Icon(Icons.close),
                                                       onPressed: () =>
                                                           Navigator.pop(context,
                                                               'Data returns from right side sheet')),
-                                                  Divider(),
+                                                  const Divider(),
                                                   _edit
                                                       ? Container(
                                                           height: 0.0,
@@ -364,7 +364,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               child: Text(
                                                                   _controller3
                                                                       .text,
-                                                                  style: TextStyle(
+                                                                  style: const TextStyle(
                                                                       fontSize:
                                                                           16,
                                                                       fontWeight:
@@ -394,10 +394,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         ),
                                                   const SizedBox(height: 16.0),
                                                   ExpansionTile(
-                                                    title: Text("링크 수정"),
+                                                    title: const Text("링크 수정"),
                                                     onExpansionChanged: (val) {
                                                       myState2(() {
-                                                        _edit = val!;
+                                                        _edit = val;
                                                       });
                                                     },
                                                     children: [
@@ -493,8 +493,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                       val!;
                                                                 });
                                                               }),
-                                                          Text("공개"),
-                                                          Tooltip(
+                                                          const Text("공개"),
+                                                          const Tooltip(
                                                             message:
                                                                 '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다',
                                                             child: Align(
@@ -631,7 +631,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       _checkVal = _checkVal2 = _edit = false;
                     },
                     child: Text(_fruits.elementAt(index),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             height: 0.8)))));
@@ -646,7 +646,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ReorderableBuilder(
         lockedIndices: [_fruits.length],
         scrollController: _scrollController,
-        longPressDelay: Duration(milliseconds: 300),
+        longPressDelay: const Duration(milliseconds: 300),
         enableScrollingWhileDragging: true,
         enableDraggable: true,
         children: generatedChildren,
@@ -665,48 +665,15 @@ class _MyHomePageState extends State<MyHomePage> {
           return GridView(
               key: _gridViewKey,
               controller: _scrollController,
-              padding: EdgeInsets.all(8.0),
-              children: children,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              padding: const EdgeInsets.all(8.0),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   mainAxisSpacing: 8.0,
                   crossAxisSpacing: 8.0,
                   childAspectRatio: 2,
-                  maxCrossAxisExtent: 100));
+                  maxCrossAxisExtent: 100),
+              children: children);
         },
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
-
-Container _buildBottomSheet(BuildContext context) {
-  return Container(
-    height: MediaQuery.of(context).size.width * 0.9,
-    width: double.infinity,
-    padding: const EdgeInsets.all(8.0),
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.blue, width: 2.0),
-      borderRadius: BorderRadius.circular(8.0),
-    ),
-    child: ListView(
-      children: <Widget>[
-        const ListTile(title: Text('Bottom sheet')),
-        const TextField(
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            icon: Icon(Icons.attach_money),
-            labelText: 'Enter an integer',
-          ),
-        ),
-        Container(
-          alignment: Alignment.center,
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.save),
-            label: const Text('Save and close'),
-            onPressed: () => Navigator.pop(context),
-          ),
-        )
-      ],
-    ),
-  );
 }
