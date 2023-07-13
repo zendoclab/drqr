@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _hasNextPage = true;
   bool _isFirstLoadRunning = false;
   bool _isLoadMoreRunning = false;
-  List _albumList = ["1","2","3"];
+  List _albumList = [{"id" : "1", "title": "good"}, {"id" : "2", "title": "bad"}];
   late ScrollController _infiniteController;
 
   void _initLoad() async {
@@ -560,25 +560,33 @@ class _MyHomePageState extends State<MyHomePage> {
                                     padding: const EdgeInsets.fromLTRB(6.0,0.0,8.0,0.0),
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        // _initLoad();
+                                        _initLoad();
                                         SideSheet.right(
                                             sheetColor: Theme.of(context).colorScheme.surface,
                                             sheetBorderRadius: 16.0,
                                             barrierDismissible: true,
-                                            width: MediaQuery.of(context).size.width * 0.96,
-                                            body: SingleChildScrollView(
-                                              child: Column(
-                                                children: [
+                                            width: MediaQuery.of(context).size.width * 0.95,
+                                            body:
                                                   StatefulBuilder(
                                                       builder:
                                                           (BuildContext context,
-                                                          StateSetter myState2) =>
+                                                          StateSetter myState3) =>
                                                 _isFirstLoadRunning
                                                 ? const Center(
                                                 child: CircularProgressIndicator(),
                                         )
                                             : Column(
                                         children: [
+                                          Align(alignment: Alignment.centerLeft,
+                                            child: IconButton(
+                                                icon: const Icon(
+                                                    Icons.close),
+                                                onPressed: () {
+                                                  Navigator.pop(context,
+                                                      'links to qrcode');
+                                                }),
+                                          ),
+                                          const Divider(),
                                         Expanded(
                                         child: ListView.builder(
                                         controller: _infiniteController,
@@ -612,9 +620,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         ],
                                         ),
                                                   ),
-                                                ],
-                                              ),
-                                            ),
                                             context: context);
                                       },
                                       child:
