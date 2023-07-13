@@ -42,11 +42,11 @@ void main() async {
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.stylus,
-        PointerDeviceKind.unknown
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.unknown
+  };
 }
 
 class MyApp extends StatelessWidget {
@@ -94,7 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final _controller4 = TextEditingController();
 
   String? shareText;
-  String? sharelist;
 
   @override
   void initState() {
@@ -104,18 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       links = linktoqrcode?.get('links');
       _fruits.addAll(links?.map((e) => e['subject']) ?? []);
-
-      if (!links.isNull) {
-        sharelist = links?.map((e) => "${e['subject']} ${e['web']}\n").join();
-        if (sharelist!.length > 0) {
-          // sharelist = sharelist!.substring(1, sharelist!.length - 1);
-          shareText = sharelist;
-        } else {
-          shareText = null;
-        }
-      } else {
-        shareText = null;
-      }
     }
   }
 
@@ -151,819 +138,779 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final generatedChildren = List.generate(
         _fruits.length + 2,
-        (index) => index == _fruits.length + 1
+            (index) => index == _fruits.length + 1
             ? Container(
-                key: Key("$index"),
-                height: (((index + 1) % 3) + 1) * 100.0,
-                alignment: const Alignment(0, 0),
-                color: Theme.of(context).colorScheme.surfaceVariant,
-                child: InkResponse(
-                    onTap: () async {
-                      await SideSheet.right(
-                          sheetColor:
-                              Theme.of(context).colorScheme.surfaceVariant,
-                          sheetBorderRadius: 16.0,
-                          barrierDismissible: true,
-                          barrierLabel: 'Add Link',
-                          width: MediaQuery.of(context).size.width * 0.98,
-                          body: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                StatefulBuilder(
-                                    builder: (BuildContext context,
-                                            StateSetter myState) =>
-                                        Form(
-                                            key: formKey,
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+            key: Key("$index"),
+            height: (((index + 1) % 3) + 1) * 100.0,
+            alignment: const Alignment(0, 0),
+            color: Theme.of(context).colorScheme.surfaceVariant,
+            child: InkResponse(
+                onTap: () async {
+
+                  _checkVal = false;
+                  _controller.clear();
+                  _controller2
+                      .clear();
+
+                  await SideSheet.right(
+                      sheetColor:
+                      Theme.of(context).colorScheme.surfaceVariant,
+                      sheetBorderRadius: 16.0,
+                      barrierDismissible: true,
+                      barrierLabel: 'Add Link',
+                      width: MediaQuery.of(context).size.width * 0.98,
+                      body: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            StatefulBuilder(
+                                builder: (BuildContext context,
+                                    StateSetter myState) =>
+                                    Form(
+                                        key: formKey,
+                                        child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              IconButton(
+                                                  icon: const Icon(
+                                                      Icons.close),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _checkVal =
+                                                          _checkVal2 =
+                                                          _edit = false;
+                                                    });
+                                                    Navigator.pop(context,
+                                                        'links to qrcode');
+                                                  }),
+                                              const Divider(),
+                                              const SizedBox(height: 8.0),
+                                              Align(
+                                                  alignment:
+                                                  Alignment.center,
+                                                  child: locale
+                                                      .languageCode ==
+                                                      'ko'
+                                                      ? const Text("링크 추가",
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .bold))
+                                                      : const Text(
+                                                      "Add Link",
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .bold))),
+                                              const SizedBox(height: 8.0),
+                                              TextFormField(
+                                                autovalidateMode:
+                                                AutovalidateMode.always,
+                                                controller: _controller,
+                                                onSaved: (val) {
+                                                  setState(() {});
+                                                },
+                                                validator: (val) {
+                                                  if (val!.isEmpty ||
+                                                      val.length > 20 ||
+                                                      RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
+                                                          .hasMatch(val)) {
+                                                    return locale
+                                                        .languageCode ==
+                                                        'ko'
+                                                        ? '링크 제목을 입력하세요 (특수문자 제한)'
+                                                        : 'Enter a link title (special characters restricted)';
+                                                  }
+                                                  return null;
+                                                },
+                                                onTap: () {
+                                                  if (FocusScope.of(context)
+                                                      .hasFocus) {
+                                                    setState(() {});
+                                                  }
+                                                },
+                                                maxLength: 20,
+                                                maxLengthEnforcement:
+                                                MaxLengthEnforcement
+                                                    .enforced,
+                                                decoration:
+                                                const InputDecoration(
+                                                  border:
+                                                  OutlineInputBorder(),
+                                                  hintText: 'Link title',
+                                                  helperText: null,
+                                                  labelText: null,
+                                                ),
+                                                maxLines: 1,
+                                              ),
+                                              const SizedBox(height: 16.0),
+                                              TextFormField(
+                                                autovalidateMode:
+                                                AutovalidateMode.always,
+                                                controller: _controller2,
+                                                onSaved: (val) {
+                                                  setState(() {});
+                                                },
+                                                validator: (val) {
+                                                  if (val!.isEmpty ||
+                                                      !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
+                                                          .hasMatch(val)) {
+                                                    return locale.languageCode ==
+                                                        'ko'
+                                                        ? '올바른 웹페이지 주소를 입력 하세요 (https://)'
+                                                        : 'Enter a valid web page address (https://)';
+                                                  }
+                                                  return null;
+                                                },
+                                                onTap: () {
+                                                  if (FocusScope.of(context)
+                                                      .hasFocus) {
+                                                    setState(() {});
+                                                  }
+                                                },
+                                                maxLength: 200,
+                                                decoration:
+                                                const InputDecoration(
+                                                  border:
+                                                  OutlineInputBorder(),
+                                                  hintText:
+                                                  'Web page address',
+                                                  helperText: null,
+                                                  labelText: null,
+                                                ),
+                                                maxLines: 1,
+                                              ),
+                                              const SizedBox(height: 16.0),
+                                              Row(
                                                 children: [
-                                                  IconButton(
-                                                      icon: const Icon(
-                                                          Icons.close),
-                                                      onPressed: () {
-                                                        setState(() {
-                                                          _checkVal =
-                                                              _checkVal2 =
-                                                                  _edit = false;
+                                                  const SizedBox(
+                                                      width: 4.0),
+                                                  Checkbox(
+                                                      value: _checkVal,
+                                                      onChanged: (val) {
+                                                        myState(() {
+                                                          _checkVal = val!;
                                                         });
-                                                        Navigator.pop(context,
-                                                            'links to qrcode');
                                                       }),
-                                                  const Divider(),
-                                                  const SizedBox(height: 8.0),
+                                                  locale.languageCode ==
+                                                      'ko'
+                                                      ? const Text("공개")
+                                                      : const Text(
+                                                      "Publicly"),
+                                                  Tooltip(
+                                                    message: locale
+                                                        .languageCode ==
+                                                        'ko'
+                                                        ? '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다'
+                                                        : 'Publicly available links will be used for search, sharing, and customer convenience',
+                                                    child: const Align(
+                                                        alignment: Alignment
+                                                            .topRight,
+                                                        child: Icon(
+                                                            Icons
+                                                                .info_outline,
+                                                            size: 16.0)),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8.0),
+                                              Align(
+                                                alignment: Alignment.center,
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    if (formKey
+                                                        .currentState!
+                                                        .validate()) {
+                                                      formKey.currentState
+                                                          ?.save();
+
+                                                      var _id =
+                                                      _getRanDate();
+
+                                                      if (_checkVal) {
+                                                        db
+                                                            .collection(
+                                                            "drqr")
+                                                            .add({
+                                                          "subject":
+                                                          _controller
+                                                              .text,
+                                                          "web":
+                                                          _controller2
+                                                              .text,
+                                                          "_id": _id
+                                                        }).then((documentSnapshot) {
+                                                          var snapId =
+                                                              documentSnapshot
+                                                                  .id;
+                                                          if (links.isNull) {
+                                                            links = [
+                                                              {
+                                                                "subject":
+                                                                _controller
+                                                                    .text,
+                                                                "web":
+                                                                _controller2
+                                                                    .text,
+                                                                "open":
+                                                                _checkVal,
+                                                                "date": _id,
+                                                                "snap": snapId
+                                                              }
+                                                            ];
+                                                          } else {
+                                                            links?.add({
+                                                              "subject":
+                                                              _controller
+                                                                  .text,
+                                                              "web":
+                                                              _controller2
+                                                                  .text,
+                                                              "open": _checkVal,
+                                                              "date": _id,
+                                                              "snap": snapId
+                                                            });
+                                                          }
+                                                        });
+                                                      }
+                                                      else {
+                                                        if (links.isNull) {
+                                                          links = [
+                                                            {
+                                                              "subject":
+                                                              _controller
+                                                                  .text,
+                                                              "web":
+                                                              _controller2
+                                                                  .text,
+                                                              "open":
+                                                              _checkVal,
+                                                              "date": _id,
+                                                              "snap": "null"
+                                                            }
+                                                          ];
+                                                        } else {
+                                                          links?.add({
+                                                            "subject":
+                                                            _controller
+                                                                .text,
+                                                            "web":
+                                                            _controller2
+                                                                .text,
+                                                            "open": _checkVal,
+                                                            "date": _id,
+                                                            "snap": "null"
+                                                          });
+                                                        }
+                                                      }
+
+                                                      linktoqrcode?.put(
+                                                          'links', links);
+
+                                                      ScaffoldMessenger.of(
+                                                          context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                          duration:
+                                                          const Duration(
+                                                              seconds:
+                                                              1),
+                                                          content: locale.languageCode ==
+                                                              'ko'
+                                                              ? const Text(
+                                                              '링크 입력됨')
+                                                              : const Text(
+                                                              "Link submitted"),
+                                                          // action: SnackBarAction(label: '확인', onPressed: () {}),
+                                                        ),
+                                                      );
+                                                      setState(() {
+                                                        _fruits.add(
+                                                            _controller
+                                                                .text);
+
+                                                        links = linktoqrcode
+                                                            ?.get('links');
+                                                      });
+                                                      Navigator.pop(
+                                                          context, '');
+                                                    }
+                                                  },
+                                                  child:
+                                                  locale.languageCode ==
+                                                      'ko'
+                                                      ? const Text('입력')
+                                                      : const Text(
+                                                      'Submit'),
+                                                ),
+                                              )
+                                            ]))),
+                          ],
+                        ),
+                      ),
+                      context: context);
+                },
+                child: const Icon(Icons.add)))
+            : index == _fruits.length
+            ? Container(
+            key: Key("$index"),
+            height: (((index + 1) % 3) + 1) * 100.0,
+            alignment: const Alignment(0, 0),
+            color: Theme.of(context).colorScheme.surfaceVariant,
+            child: InkResponse(
+                onTap: () {
+                  shareText = links?.map((e) => "${e['subject']} ${e['web']}\n").join();
+                  if (shareText!.length>0) {
+                    Share.share(subject: 'drqr', shareText!);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      duration: const Duration(seconds: 1),
+                      content: locale.languageCode == 'ko'
+                          ? Text('공유할 링크목록이 없습니다')
+                          : Text("No list of links to share"),
+                    ));
+                  }
+                },
+                child: const Icon(Icons.share)))
+            : Container(
+            key: Key("$index"),
+            height: (((index + 1) % 3) + 1) * 100.0,
+            alignment: const Alignment(0, 0),
+            color: Theme.of(context).colorScheme.outlineVariant,
+            child: InkResponse(
+                onTap: () async {
+                  _controller3.text = links?[index]['subject'];
+                  _controller4.text = links?[index]['web'];
+                  _checkVal2 = links?[index]['open'];
+                  _edit = false;
+
+                  await SideSheet.right(
+                      sheetColor: Theme.of(context).colorScheme.surface,
+                      sheetBorderRadius: 16.0,
+                      barrierDismissible: true,
+                      width: MediaQuery.of(context).size.width * 0.98,
+                      body: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            StatefulBuilder(
+                                builder:
+                                    (BuildContext context,
+                                    StateSetter myState2) =>
+                                    Form(
+                                        key: formKey2,
+                                        child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                            children: [
+                                              IconButton(
+                                                  icon: const Icon(
+                                                      Icons.close),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      _checkVal =
+                                                          _checkVal2 =
+                                                          _edit =
+                                                      false;
+                                                    });
+                                                    Navigator.pop(
+                                                        context,
+                                                        'links to qrcode');
+                                                  }),
+                                              const Divider(),
+                                              _edit
+                                                  ? Container(
+                                                height: 0.0,
+                                              )
+                                                  : Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .center,
+                                                children: [
+                                                  const SizedBox(
+                                                      height:
+                                                      8.0),
+                                                  Align(
+                                                    alignment:
+                                                    Alignment
+                                                        .center,
+                                                    child: Text(
+                                                        "${links?[index]['subject']} - $index - ${links?[index]["snap"]}",
+                                                        style: const TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight: FontWeight.bold)),
+                                                  ),
+                                                  const SizedBox(
+                                                      height:
+                                                      8.0),
                                                   Align(
                                                       alignment:
-                                                          Alignment.center,
-                                                      child: locale
-                                                                  .languageCode ==
-                                                              'ko'
-                                                          ? const Text("링크 추가",
-                                                              style: TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold))
-                                                          : const Text(
-                                                              "Add Link",
-                                                              style: TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold))),
-                                                  const SizedBox(height: 8.0),
+                                                      Alignment
+                                                          .center,
+                                                      child:
+                                                      PrettyQr(
+                                                        typeNumber:
+                                                        null,
+                                                        size:
+                                                        300,
+                                                        data: links?[index]
+                                                        [
+                                                        'web'],
+                                                        errorCorrectLevel:
+                                                        QrErrorCorrectLevel.M,
+                                                        roundEdges:
+                                                        true,
+                                                      )),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                  height: 16.0),
+                                              ExpansionTile(
+                                                title: locale
+                                                    .languageCode ==
+                                                    'ko'
+                                                    ? const Text(
+                                                    "링크 수정")
+                                                    : const Text(
+                                                    "Modify Link"),
+                                                onExpansionChanged:
+                                                    (val) {
+                                                  myState2(() {
+                                                    _edit = val;
+                                                    if(val) {
+                                                      _controller3.text = links?[index]['subject'];
+                                                      _controller4.text = links?[index]['web'];
+                                                      _checkVal2 = links?[index]['open'];
+                                                    }
+                                                  });
+                                                },
+                                                children: [
                                                   TextFormField(
                                                     autovalidateMode:
-                                                        AutovalidateMode.always,
-                                                    controller: _controller,
+                                                    AutovalidateMode
+                                                        .always,
+                                                    controller:
+                                                    _controller3,
                                                     onSaved: (val) {
-                                                      setState(() {});
+                                                      setState(
+                                                              () {});
                                                     },
-                                                    validator: (val) {
+                                                    validator:
+                                                        (val) {
                                                       if (val!.isEmpty ||
-                                                          val.length > 20 ||
+                                                          val.length >
+                                                              20 ||
                                                           RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
-                                                              .hasMatch(val)) {
-                                                        return locale
-                                                                    .languageCode ==
-                                                                'ko'
+                                                              .hasMatch(
+                                                              val)) {
+                                                        return locale.languageCode ==
+                                                            'ko'
                                                             ? '링크 제목을 입력하세요 (특수문자 제한)'
                                                             : 'Enter a link title (special characters restricted)';
                                                       }
                                                       return null;
                                                     },
                                                     onTap: () {
-                                                      if (FocusScope.of(context)
+                                                      if (FocusScope.of(
+                                                          context)
                                                           .hasFocus) {
-                                                        setState(() {});
+                                                        setState(
+                                                                () {});
                                                       }
                                                     },
                                                     maxLength: 20,
                                                     maxLengthEnforcement:
-                                                        MaxLengthEnforcement
-                                                            .enforced,
+                                                    MaxLengthEnforcement
+                                                        .enforced,
                                                     decoration:
-                                                        const InputDecoration(
+                                                    const InputDecoration(
                                                       border:
-                                                          OutlineInputBorder(),
-                                                      hintText: 'Link title',
-                                                      helperText: null,
-                                                      labelText: null,
+                                                      OutlineInputBorder(),
+                                                      hintText:
+                                                      'Link title',
+                                                      helperText:
+                                                      null,
+                                                      labelText:
+                                                      null,
                                                     ),
                                                     maxLines: 1,
                                                   ),
-                                                  const SizedBox(height: 16.0),
+                                                  const SizedBox(
+                                                      height: 16.0),
                                                   TextFormField(
                                                     autovalidateMode:
-                                                        AutovalidateMode.always,
-                                                    controller: _controller2,
+                                                    AutovalidateMode
+                                                        .always,
+                                                    controller:
+                                                    _controller4,
                                                     onSaved: (val) {
-                                                      setState(() {});
+                                                      setState(
+                                                              () {});
                                                     },
-                                                    validator: (val) {
+                                                    validator:
+                                                        (val) {
                                                       if (val!.isEmpty ||
                                                           !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
-                                                              .hasMatch(val)) {
-                                                        return locale
-                                                                    .languageCode ==
-                                                                'ko'
-                                                            ? '올바른 웹페이지 주소를 입력 하세요'
-                                                            : 'Enter a valid web page address';
+                                                              .hasMatch(
+                                                              val)) {
+                                                        return locale.languageCode ==
+                                                            'ko'
+                                                            ? '올바른 웹페이지 주소를 입력 하세요 (https://)'
+                                                            : 'Enter a valid web page address (https://)';
                                                       }
                                                       return null;
                                                     },
                                                     onTap: () {
-                                                      if (FocusScope.of(context)
+                                                      if (FocusScope.of(
+                                                          context)
                                                           .hasFocus) {
-                                                        setState(() {});
+                                                        setState(
+                                                                () {});
                                                       }
                                                     },
                                                     maxLength: 200,
                                                     decoration:
-                                                        const InputDecoration(
+                                                    const InputDecoration(
                                                       border:
-                                                          OutlineInputBorder(),
+                                                      OutlineInputBorder(),
                                                       hintText:
-                                                          'Web page address',
-                                                      helperText: null,
-                                                      labelText: null,
+                                                      'Web page address',
+                                                      helperText:
+                                                      null,
+                                                      labelText:
+                                                      null,
                                                     ),
                                                     maxLines: 1,
                                                   ),
-                                                  const SizedBox(height: 16.0),
+                                                  const SizedBox(
+                                                      height: 16.0),
                                                   Row(
                                                     children: [
                                                       const SizedBox(
-                                                          width: 4.0),
+                                                          width:
+                                                          4.0),
                                                       Checkbox(
-                                                          value: _checkVal,
-                                                          onChanged: (val) {
-                                                            myState(() {
-                                                              _checkVal = val!;
-                                                            });
+                                                          value:
+                                                          _checkVal2,
+                                                          onChanged:
+                                                              (val) {
+                                                            myState2(
+                                                                    () {
+                                                                  _checkVal2 =
+                                                                  val!;
+                                                                });
                                                           }),
                                                       locale.languageCode ==
-                                                              'ko'
-                                                          ? const Text("공개")
+                                                          'ko'
+                                                          ? const Text(
+                                                          "공개")
                                                           : const Text(
-                                                              "Publicly"),
+                                                          "Publicly"),
                                                       Tooltip(
-                                                        message: locale
-                                                                    .languageCode ==
-                                                                'ko'
+                                                        message: locale.languageCode ==
+                                                            'ko'
                                                             ? '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다'
                                                             : 'Publicly available links will be used for search, sharing, and customer convenience',
                                                         child: const Align(
-                                                            alignment: Alignment
+                                                            alignment:
+                                                            Alignment
                                                                 .topRight,
                                                             child: Icon(
                                                                 Icons
                                                                     .info_outline,
-                                                                size: 16.0)),
+                                                                size:
+                                                                16.0)),
                                                       ),
                                                     ],
                                                   ),
-                                                  const SizedBox(height: 8.0),
-                                                  Align(
-                                                    alignment: Alignment.center,
-                                                    child: ElevatedButton(
-                                                      onPressed: () {
-                                                        if (formKey
-                                                            .currentState!
-                                                            .validate()) {
-                                                          formKey.currentState
-                                                              ?.save();
+                                                  const SizedBox(
+                                                      height: 8.0),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                    children: [
+                                                      Align(
+                                                        alignment:
+                                                        Alignment
+                                                            .center,
+                                                        child:
+                                                        ElevatedButton(
+                                                          onPressed:
+                                                              () {
+                                                            if (formKey2
+                                                                .currentState!
+                                                                .validate()) {
+                                                              formKey2
+                                                                  .currentState
+                                                                  ?.save();
 
-                                                          var _id =
+                                                              var _id =
                                                               _getRanDate();
 
-                                                          if (_checkVal) {
-                                                            db
-                                                                .collection(
-                                                                    "drqr")
-                                                                .add({
-                                                              "subject":
-                                                                  _controller
-                                                                      .text,
-                                                              "web":
-                                                                  _controller2
-                                                                      .text,
-                                                              "_id": _id
-                                                            }).then((documentSnapshot) {
-                                                              var snapId =
-                                                                  documentSnapshot
-                                                                      .id;
-                                                              if (links.isNull) {
-                                                                links = [
-                                                                  {
-                                                                    "subject":
-                                                                    _controller
-                                                                        .text,
-                                                                    "web":
-                                                                    _controller2
-                                                                        .text,
-                                                                    "open":
-                                                                    _checkVal,
-                                                                    "date": _id,
-                                                                    "snap": snapId
-                                                                  }
-                                                                ];
-                                                              } else {
-                                                                links?.add({
-                                                                  "subject":
-                                                                  _controller
-                                                                      .text,
-                                                                  "web":
-                                                                  _controller2
-                                                                      .text,
-                                                                  "open": _checkVal,
-                                                                  "date": _id,
-                                                                  "snap": snapId
-                                                                });
-                                                              }
-                                                            });
-                                                          }
+                                                              db
+                                                                  .collection("drqr")
+                                                                  .doc(links?[index]["snap"])
+                                                                  .delete();
 
-                                                          linktoqrcode?.put(
-                                                              'links', links);
+                                                              links?.removeAt(
+                                                                  index);
 
-                                                          if (!links.isNull) {
-                                                            sharelist = links
-                                                                ?.map((e) =>
-                                                                    "${e['subject']} ${e['web']}\n")
-                                                                .join();
-                                                            if (sharelist!
-                                                                    .length >
-                                                                0) {
-                                                              // sharelist = sharelist!.substring(1, sharelist!.length - 1);
-                                                              shareText =
-                                                                  sharelist;
-                                                            } else {
-                                                              shareText = null;
+                                                              linktoqrcode?.put(
+                                                                  'links',
+                                                                  links);
+
+                                                              ScaffoldMessenger.of(context)
+                                                                  .showSnackBar(
+                                                                SnackBar(
+                                                                  duration: const Duration(seconds: 1),
+                                                                  content: locale.languageCode == 'ko' ? const Text('링크 삭제됨') : const Text('Link deleted'),
+                                                                  // action: SnackBarAction(label: '확인', onPressed: () {}),
+                                                                ),
+                                                              );
+                                                              setState(
+                                                                      () {
+                                                                    _fruits.removeAt(index);
+                                                                    links =
+                                                                        linktoqrcode?.get('links');
+                                                                  });
                                                             }
-                                                          } else {
-                                                            shareText = null;
-                                                          }
-
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                            SnackBar(
-                                                              duration:
-                                                                  const Duration(
-                                                                      seconds:
-                                                                          1),
-                                                              content: locale.languageCode ==
-                                                                      'ko'
-                                                                  ? const Text(
-                                                                      '링크 입력됨')
-                                                                  : const Text(
-                                                                      "Link submitted"),
-                                                              // action: SnackBarAction(label: '확인', onPressed: () {}),
-                                                            ),
-                                                          );
-                                                          setState(() {
-                                                            _fruits.add(
-                                                                _controller
-                                                                    .text);
-
-                                                            _checkVal = false;
-                                                            _controller.clear();
-                                                            _controller2
-                                                                .clear();
-
-                                                            links = linktoqrcode
-                                                                ?.get('links');
-                                                            _checkVal =
-                                                                _checkVal2 =
-                                                                    _edit =
-                                                                        false;
-                                                          });
-                                                          Navigator.pop(
-                                                              context, '');
-                                                        }
-                                                      },
-                                                      child:
-                                                          locale.languageCode ==
-                                                                  'ko'
-                                                              ? const Text('입력')
+                                                            Navigator.pop(
+                                                                context,
+                                                                '');
+                                                          },
+                                                          child: locale.languageCode ==
+                                                              'ko'
+                                                              ? const Text(
+                                                              '삭제')
                                                               : const Text(
-                                                                  'Submit'),
-                                                    ),
-                                                  )
-                                                ]))),
-                              ],
-                            ),
-                          ),
-                          context: context);
-                    },
-                    child: const Icon(Icons.add)))
-            : index == _fruits.length
-                ? Container(
-                    key: Key("$index"),
-                    height: (((index + 1) % 3) + 1) * 100.0,
-                    alignment: const Alignment(0, 0),
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    child: InkResponse(
-                        onTap: () {
-                          if (!shareText.isNull) {
-                            Share.share(subject: 'drqr', shareText!);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              duration: const Duration(seconds: 1),
-                              content: locale.languageCode == 'ko'
-                                  ? Text('공유할 링크목록이 없습니다')
-                                  : Text("No list of links to share"),
-                            ));
-                          }
-                        },
-                        child: const Icon(Icons.share)))
-                : Container(
-                    key: Key("$index"),
-                    height: (((index + 1) % 3) + 1) * 100.0,
-                    alignment: const Alignment(0, 0),
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                    child: InkResponse(
-                        onTap: () async {
-                          _controller3.text = links?[index]['subject'];
-                          _controller4.text = links?[index]['web'];
-                          _checkVal2 = links?[index]['open'];
+                                                              'Delete'),
+                                                        ),
+                                                      ),
+                                                      Align(
+                                                        alignment:
+                                                        Alignment
+                                                            .center,
+                                                        child:
+                                                        ElevatedButton(
+                                                          onPressed:
+                                                              () {
+                                                            if (formKey2
+                                                                .currentState!
+                                                                .validate()) {
+                                                              formKey2
+                                                                  .currentState
+                                                                  ?.save();
 
-                          await SideSheet.right(
-                              sheetColor: Theme.of(context).colorScheme.surface,
-                              sheetBorderRadius: 16.0,
-                              barrierDismissible: true,
-                              width: MediaQuery.of(context).size.width * 0.98,
-                              body: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    StatefulBuilder(
-                                        builder:
-                                            (BuildContext context,
-                                                    StateSetter myState2) =>
-                                                Form(
-                                                    key: formKey2,
-                                                    child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          IconButton(
-                                                              icon: const Icon(
-                                                                  Icons.close),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  _checkVal =
-                                                                      _checkVal2 =
-                                                                          _edit =
-                                                                              false;
-                                                                });
-                                                                Navigator.pop(
-                                                                    context,
-                                                                    'links to qrcode');
-                                                              }),
-                                                          const Divider(),
-                                                          _edit
-                                                              ? Container(
-                                                                  height: 0.0,
-                                                                )
-                                                              : Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            8.0),
-                                                                    Align(
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .center,
-                                                                      child: Text(
-                                                                          "${_controller3.text} $index, ${links?[index]['date']}, ${links?[index]["snap"]}",
-                                                                          style: const TextStyle(
-                                                                              fontSize: 16,
-                                                                              fontWeight: FontWeight.bold)),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            8.0),
-                                                                    Align(
-                                                                        alignment:
-                                                                            Alignment
-                                                                                .center,
-                                                                        child:
-                                                                            PrettyQr(
-                                                                          typeNumber:
-                                                                              null,
-                                                                          size:
-                                                                              300,
-                                                                          data: links?[index]
-                                                                              [
-                                                                              'web'],
-                                                                          errorCorrectLevel:
-                                                                              QrErrorCorrectLevel.M,
-                                                                          roundEdges:
-                                                                              true,
-                                                                        )),
-                                                                  ],
-                                                                ),
-                                                          const SizedBox(
-                                                              height: 16.0),
-                                                          ExpansionTile(
-                                                            title: locale
-                                                                        .languageCode ==
-                                                                    'ko'
-                                                                ? const Text(
-                                                                    "링크 수정")
-                                                                : const Text(
-                                                                    "Modify Link"),
-                                                            onExpansionChanged:
-                                                                (val) {
-                                                              myState2(() {
-                                                                _edit = val;
-                                                                if(val) {
-                                                                  _controller3.text = links?[index]['subject'];
-                                                                  _controller4.text = links?[index]['web'];
-                                                                  _checkVal2 = links?[index]['open'];
+                                                              var _id =
+                                                              _getRanDate();
+
+                                                              if (_checkVal2) {
+                                                                if(links?[index]['snap']=="null") {
+                                                                  db.collection("drqr").add({
+                                                                    "subject": _controller3.text,
+                                                                    "web": _controller4.text,
+                                                                    "_id": _id
+                                                                  }).then((documentSnapshot) {
+                                                                    print("Added Data with ID: ${documentSnapshot.id}");
+                                                                    var snapId = documentSnapshot.id;
+                                                                    links?[index] =
+                                                                    {
+                                                                      "subject": _controller3.text,
+                                                                      "web": _controller4.text,
+                                                                      "open": _checkVal2,
+                                                                      "date": _id,
+                                                                      "snap": snapId
+                                                                    };
+                                                                  });
                                                                 }
-                                                              });
-                                                            },
-                                                            children: [
-                                                              TextFormField(
-                                                                autovalidateMode:
-                                                                    AutovalidateMode
-                                                                        .always,
-                                                                controller:
-                                                                    _controller3,
-                                                                onSaved: (val) {
-                                                                  setState(
-                                                                      () {});
-                                                                },
-                                                                validator:
-                                                                    (val) {
-                                                                  if (val!.isEmpty ||
-                                                                      val.length >
-                                                                          20 ||
-                                                                      RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
-                                                                          .hasMatch(
-                                                                              val)) {
-                                                                    return locale.languageCode ==
-                                                                            'ko'
-                                                                        ? '링크 제목을 입력하세요 (특수문자 제한)'
-                                                                        : 'Enter a link title (special characters restricted)';
-                                                                  }
-                                                                  return null;
-                                                                },
-                                                                onTap: () {
-                                                                  if (FocusScope.of(
-                                                                          context)
-                                                                      .hasFocus) {
-                                                                    setState(
-                                                                        () {});
-                                                                  }
-                                                                },
-                                                                maxLength: 20,
-                                                                maxLengthEnforcement:
-                                                                    MaxLengthEnforcement
-                                                                        .enforced,
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(),
-                                                                  hintText:
-                                                                      'Link title',
-                                                                  helperText:
-                                                                      null,
-                                                                  labelText:
-                                                                      null,
+                                                                else {
+                                                                  db.collection("drqr").doc(links?[index]["snap"]).set({
+                                                                    "subject": _controller3.text,
+                                                                    "web": _controller4.text,
+                                                                    "_id": links?[index]['date']
+                                                                  }).then((value) => links?[index] =
+                                                                  {
+                                                                    "subject": _controller3.text,
+                                                                    "web": _controller4.text,
+                                                                    "open": _checkVal2,
+                                                                    "date": links?[index]['date'],
+                                                                    "snap": links?[index]['snap']
+                                                                  });
+                                                                }
+                                                              }
+                                                              else {
+                                                                if(links?[index]['snap']=="null") {
+                                                                }
+                                                                else {
+                                                                  db.collection("drqr").doc(links?[index]["snap"]).delete();
+                                                                }
+                                                                links?[index] = {
+                                                                  "subject": _controller3.text,
+                                                                  "web": _controller4.text,
+                                                                  "open": _checkVal2,
+                                                                  "date": links?[index]['date'],
+                                                                  "snap": links?[index]['snap']
+                                                                };
+                                                              }
+
+                                                              linktoqrcode?.put(
+                                                                  'links',
+                                                                  links);
+
+                                                              ScaffoldMessenger.of(context)
+                                                                  .showSnackBar(
+                                                                SnackBar(
+                                                                  duration: const Duration(seconds: 1),
+                                                                  content: locale.languageCode == 'ko' ? const Text('링크 수정됨') : const Text('Link modified'),
+                                                                  // action: SnackBarAction(label: '확인', onPressed: () {}),
                                                                 ),
-                                                                maxLines: 1,
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 16.0),
-                                                              TextFormField(
-                                                                autovalidateMode:
-                                                                    AutovalidateMode
-                                                                        .always,
-                                                                controller:
-                                                                    _controller4,
-                                                                onSaved: (val) {
-                                                                  setState(
-                                                                      () {});
-                                                                },
-                                                                validator:
-                                                                    (val) {
-                                                                  if (val!.isEmpty ||
-                                                                      !RegExp(r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[^\s]*)')
-                                                                          .hasMatch(
-                                                                              val)) {
-                                                                    return locale.languageCode ==
-                                                                            'ko'
-                                                                        ? '올바른 웹페이지 주소를 입력 하세요'
-                                                                        : 'Enter a valid web page address';
-                                                                  }
-                                                                  return null;
-                                                                },
-                                                                onTap: () {
-                                                                  if (FocusScope.of(
-                                                                          context)
-                                                                      .hasFocus) {
-                                                                    setState(
-                                                                        () {});
-                                                                  }
-                                                                },
-                                                                maxLength: 200,
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(),
-                                                                  hintText:
-                                                                      'Web page address',
-                                                                  helperText:
-                                                                      null,
-                                                                  labelText:
-                                                                      null,
-                                                                ),
-                                                                maxLines: 1,
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 16.0),
-                                                              Row(
-                                                                children: [
-                                                                  const SizedBox(
-                                                                      width:
-                                                                          4.0),
-                                                                  Checkbox(
-                                                                      value:
-                                                                          _checkVal2,
-                                                                      onChanged:
-                                                                          (val) {
-                                                                        myState2(
-                                                                            () {
-                                                                          _checkVal2 =
-                                                                              val!;
-                                                                        });
-                                                                      }),
-                                                                  locale.languageCode ==
-                                                                          'ko'
-                                                                      ? const Text(
-                                                                          "공개")
-                                                                      : const Text(
-                                                                          "Publicly"),
-                                                                  Tooltip(
-                                                                    message: locale.languageCode ==
-                                                                            'ko'
-                                                                        ? '공개된 링크는 검색, 공유, 고객편의를 위해 사용될 예정입니다'
-                                                                        : 'Publicly available links will be used for search, sharing, and customer convenience',
-                                                                    child: const Align(
-                                                                        alignment:
-                                                                            Alignment
-                                                                                .topRight,
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .info_outline,
-                                                                            size:
-                                                                                16.0)),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 8.0),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceEvenly,
-                                                                children: [
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .center,
-                                                                    child:
-                                                                        ElevatedButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        if (formKey2
-                                                                            .currentState!
-                                                                            .validate()) {
-                                                                          formKey2
-                                                                              .currentState
-                                                                              ?.save();
+                                                              );
+                                                              setState(
+                                                                      () {
+                                                                    _fruits[index] =
+                                                                        _controller3.text;
 
-                                                                          var _id =
-                                                                              _getRanDate();
+                                                                    links =
+                                                                        linktoqrcode?.get('links');
+                                                                  });
 
-                                                                          db
-                                                                              .collection("drqr")
-                                                                              .doc(links?[index]["snap"])
-                                                                              .delete();
-
-                                                                          links?.removeAt(
-                                                                              index);
-
-                                                                          linktoqrcode?.put(
-                                                                              'links',
-                                                                              links);
-
-                                                                          if (!links
-                                                                              .isNull) {
-                                                                            sharelist =
-                                                                                links?.map((e) => "${e['subject']} ${e['web']}\n").join();
-                                                                            if (sharelist!.length >
-                                                                                0) {
-                                                                              // sharelist = sharelist!.substring(1, sharelist!.length - 1);
-                                                                              shareText = sharelist;
-                                                                            } else {
-                                                                              shareText = null;
-                                                                            }
-                                                                          } else {
-                                                                            shareText =
-                                                                                null;
-                                                                          }
-
-                                                                          ScaffoldMessenger.of(context)
-                                                                              .showSnackBar(
-                                                                            SnackBar(
-                                                                              duration: const Duration(seconds: 1),
-                                                                              content: locale.languageCode == 'ko' ? const Text('링크 삭제됨') : const Text('Link deleted'),
-                                                                              // action: SnackBarAction(label: '확인', onPressed: () {}),
-                                                                            ),
-                                                                          );
-                                                                          setState(
-                                                                              () {
-                                                                            _fruits.removeAt(index);
-                                                                            _checkVal2 =
-                                                                                false;
-                                                                            _controller3.clear();
-                                                                            _controller4.clear();
-
-                                                                            links =
-                                                                                linktoqrcode?.get('links');
-                                                                            _checkVal =
-                                                                                _checkVal2 = _edit = false;
-                                                                          });
-                                                                        }
-                                                                        Navigator.pop(
-                                                                            context,
-                                                                            '');
-                                                                      },
-                                                                      child: locale.languageCode ==
-                                                                              'ko'
-                                                                          ? const Text(
-                                                                              '삭제')
-                                                                          : const Text(
-                                                                              'Delete'),
-                                                                    ),
-                                                                  ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .center,
-                                                                    child:
-                                                                        ElevatedButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        if (formKey2
-                                                                            .currentState!
-                                                                            .validate()) {
-                                                                          formKey2
-                                                                              .currentState
-                                                                              ?.save();
-
-                                                                          var _id =
-                                                                              _getRanDate();
-
-                                                                          var snapId;
-
-                                                                          if (_checkVal2) {
-                                                                            if(links?[index]['snap'].isNull) {
-                                                                              db.collection("drqr").add({
-                                                                                "subject": _controller3.text,
-                                                                                "web": _controller4.text,
-                                                                                "_id": _id
-                                                                              }).then((documentSnapshot) {
-                                                                                print("Added Data with ID: ${documentSnapshot.id}");
-                                                                                snapId = documentSnapshot.id;
-                                                                              });
-                                                                              links?[index] =
-                                                                              {
-                                                                                "subject": _controller3.text,
-                                                                                "web": _controller4.text,
-                                                                                "open": _checkVal2,
-                                                                                "date": _id,
-                                                                                "snap": snapId
-                                                                              };
-                                                                            }
-                                                                            else {
-                                                                              db.collection("drqr").doc(links?[index]["snap"]).set({
-                                                                                "subject": _controller3.text,
-                                                                                "web": _controller4.text,
-                                                                                "_id": links?[index]['date']
-                                                                              });
-                                                                              links?[index] =
-                                                                              {
-                                                                                "subject": _controller3.text,
-                                                                                "web": _controller4.text,
-                                                                                "open": _checkVal2,
-                                                                                "date": links?[index]['date'],
-                                                                                "snap": links?[index]['snap']
-                                                                              };
-                                                                            }
-                                                                          }
-                                                                          else {
-                                                                            if(links?[index]['snap'].isNull) {
-                                                                            }
-                                                                            else {
-                                                                              db.collection("drqr").doc(links?[index]["snap"]).delete();
-                                                                              links?.removeAt(index);
-                                                                            }
-                                                                            links?[index] = {
-                                                                              "subject": _controller3.text,
-                                                                              "web": _controller4.text,
-                                                                              "open": _checkVal2,
-                                                                              "date": links?[index]['date'],
-                                                                              "snap": links?[index]['snap']
-                                                                            };
-                                                                          }
-
-                                                                          linktoqrcode?.put(
-                                                                              'links',
-                                                                              links);
-
-                                                                          if (!links
-                                                                              .isNull) {
-                                                                            sharelist =
-                                                                                links?.map((e) => "${e['subject']} ${e['web']}\n").join();
-                                                                            if (sharelist!.length >
-                                                                                0) {
-                                                                              // sharelist = sharelist!.substring(1, sharelist!.length - 1);
-                                                                              shareText = sharelist;
-                                                                            } else {
-                                                                              shareText = null;
-                                                                            }
-                                                                          } else {
-                                                                            shareText =
-                                                                                null;
-                                                                          }
-                                                                          snapId =
-                                                                              null;
-                                                                          ScaffoldMessenger.of(context)
-                                                                              .showSnackBar(
-                                                                            SnackBar(
-                                                                              duration: const Duration(seconds: 1),
-                                                                              content: locale.languageCode == 'ko' ? const Text('링크 수정됨') : const Text('Link modified'),
-                                                                              // action: SnackBarAction(label: '확인', onPressed: () {}),
-                                                                            ),
-                                                                          );
-                                                                          setState(
-                                                                              () {
-                                                                            _fruits[index] =
-                                                                                _controller3.text;
-                                                                            _checkVal2 =
-                                                                                false;
-                                                                            _controller3.clear();
-                                                                            _controller4.clear();
-
-                                                                            links =
-                                                                                linktoqrcode?.get('links');
-                                                                            _checkVal =
-                                                                                _checkVal2 = _edit = false;
-                                                                          });
-
-                                                                          Navigator.pop(
-                                                                              context,
-                                                                              '');
-                                                                        }
-                                                                      },
-                                                                      child: locale.languageCode ==
-                                                                              'ko'
-                                                                          ? const Text(
-                                                                              '수정')
-                                                                          : const Text(
-                                                                              'Edit'),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 8.0),
-                                                            ],
-                                                          ),
-                                                        ]))),
-                                  ],
-                                ),
-                              ),
-                              context: context);
-                        },
-                        child: Text(
-                            "${_fruits.elementAt(index)} $index",
-                            style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                height: 0.8)))));
+                                                              Navigator.pop(
+                                                                  context,
+                                                                  '');
+                                                            }
+                                                          },
+                                                          child: locale.languageCode ==
+                                                              'ko'
+                                                              ? const Text(
+                                                              '수정')
+                                                              : const Text(
+                                                              'Edit'),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                      height: 8.0),
+                                                ],
+                                              ),
+                                            ]))),
+                          ],
+                        ),
+                      ),
+                      context: context);
+                },
+                child: Text(
+                    "${_fruits.elementAt(index)} $index",
+                    style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurfaceVariant,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        height: 0.8)))));
 
     return Scaffold(
       key: _scaffoldKey,
@@ -1003,7 +950,7 @@ class _MyHomePageState extends State<MyHomePage> {
             _fruits.insert(orderUpdateEntity.newIndex, fruit);
             final temp = links?[orderUpdateEntity.oldIndex];
             links?[orderUpdateEntity.oldIndex] =
-                links?[orderUpdateEntity.newIndex];
+            links?[orderUpdateEntity.newIndex];
             links?[orderUpdateEntity.newIndex] = temp;
             linktoqrcode?.put('links', links);
             links = linktoqrcode?.get('links');
