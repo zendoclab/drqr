@@ -455,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           keyboardType: TextInputType.text,
                                           autovalidateMode:
                                           AutovalidateMode.always,
-                                          controller: _controller,
+                                          controller: _controller5,
                                           onSaved: (val) {
                                             setState(() {});
                                           },
@@ -497,125 +497,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                     padding: const EdgeInsets.fromLTRB(6.0,0.0,8.0,0.0),
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        if (formKey
-                                            .currentState!
-                                            .validate()) {
-                                          formKey.currentState
-                                              ?.save();
-
-                                          var _id =
-                                          _getRanDate();
-
-                                          if (_checkVal) {
-                                            db
-                                                .collection(
-                                                "drqr")
-                                                .add({
-                                              "subject":
-                                              _controller
-                                                  .text,
-                                              "web":
-                                              _controller2
-                                                  .text,
-                                              "_id": _id
-                                            }).then((documentSnapshot) {
-                                              var snapId =
-                                                  documentSnapshot
-                                                      .id;
-                                              if (links.isNull) {
-                                                links = [
-                                                  {
-                                                    "subject":
-                                                    _controller
-                                                        .text,
-                                                    "web":
-                                                    _controller2
-                                                        .text,
-                                                    "open":
-                                                    _checkVal,
-                                                    "date": _id,
-                                                    "snap": snapId
-                                                  }
-                                                ];
-                                                linktoqrcode.put(
-                                                    'links', links);
-                                              } else {
-                                                links?.add({
-                                                  "subject":
-                                                  _controller
-                                                      .text,
-                                                  "web":
-                                                  _controller2
-                                                      .text,
-                                                  "open": _checkVal,
-                                                  "date": _id,
-                                                  "snap": snapId
-                                                });
-                                                linktoqrcode.put(
-                                                    'links', links);
-                                              }
-                                            });
-                                          }
-                                          else {
-                                            if (links.isNull) {
-                                              links = [
-                                                {
-                                                  "subject":
-                                                  _controller
-                                                      .text,
-                                                  "web":
-                                                  _controller2
-                                                      .text,
-                                                  "open":
-                                                  _checkVal,
-                                                  "date": _id,
-                                                  "snap": "null"
-                                                }
-                                              ];
-                                            } else {
-                                              links?.add({
-                                                "subject":
-                                                _controller
-                                                    .text,
-                                                "web":
-                                                _controller2
-                                                    .text,
-                                                "open": _checkVal,
-                                                "date": _id,
-                                                "snap": "null"
-                                              });
-                                            }
-                                          }
-
-                                          ScaffoldMessenger.of(
-                                              context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              duration:
-                                              const Duration(
-                                                  seconds:
-                                                  1),
-                                              content: locale.languageCode ==
-                                                  'ko'
-                                                  ? const Text(
-                                                  '링크 입력됨')
-                                                  : const Text(
-                                                  "Link submitted"),
-                                              // action: SnackBarAction(label: '확인', onPressed: () {}),
+                                        SideSheet.right(
+                                            sheetColor: Theme.of(context).colorScheme.surface,
+                                            sheetBorderRadius: 16.0,
+                                            barrierDismissible: true,
+                                            width: MediaQuery.of(context).size.width * 0.96,
+                                            body: SingleChildScrollView(
+                                              child: Column(
+                                                children: [
+                                                  StatefulBuilder(
+                                                      builder:
+                                                          (BuildContext context,
+                                                          StateSetter myState2) =>
+                                                          Text("리스트")
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          );
-                                          setState(() {
-                                            _fruits.add(
-                                                _controller
-                                                    .text);
-                                            linktoqrcode.put(
-                                                'links', links);
-                                            links = linktoqrcode
-                                                .get('links');
-                                          });
-                                          Navigator.pop(
-                                              context, '');
-                                        }
+                                            context: context);
                                       },
                                       child:
                                       locale.languageCode ==
@@ -626,9 +525,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ),
                                   )
                                 ],
-                              ),
-
-                                            ]))),
+                              ),]))),
                           ],
                         ),
                       ),
