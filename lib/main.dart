@@ -468,8 +468,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       duration: const Duration(seconds: 1),
                       content: locale.languageCode == 'ko'
-                          ? Text('공유할 링크목록이 없습니다')
-                          : Text("No list of links to share"),
+                          ? const Text('공유할 링크목록이 없습니다')
+                          : const Text("No list of links to share"),
                     ));
                   }
                 },
@@ -537,7 +537,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     Alignment
                                                         .center,
                                                     child: Text(
-                                                        "${links?[index]['subject']} - $index - ${links?[index]["snap"]}",
+                                                        links?[index]['subject'],
                                                         style: const TextStyle(
                                                             fontSize: 16,
                                                             fontWeight: FontWeight.bold)),
@@ -814,7 +814,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                     "web": _controller4.text,
                                                                     "_id": _id
                                                                   }).then((documentSnapshot) {
-                                                                    print("Added Data with ID: ${documentSnapshot.id}");
                                                                     var snapId = documentSnapshot.id;
                                                                     links?[index] =
                                                                     {
@@ -903,7 +902,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       context: context);
                 },
                 child: Text(
-                    "${_fruits.elementAt(index)} $index",
+                    "${_fruits.elementAt(index)}:$index",
                     style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme
@@ -946,15 +945,17 @@ class _MyHomePageState extends State<MyHomePage> {
         children: generatedChildren,
         onReorder: (List<OrderUpdateEntity> orderUpdateEntities) {
           for (final orderUpdateEntity in orderUpdateEntities) {
-            final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
-            _fruits.insert(orderUpdateEntity.newIndex, fruit);
             final temp = links?[orderUpdateEntity.oldIndex];
             links?[orderUpdateEntity.oldIndex] =
             links?[orderUpdateEntity.newIndex];
             links?[orderUpdateEntity.newIndex] = temp;
             linktoqrcode?.put('links', links);
             links = linktoqrcode?.get('links');
+            final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
+            _fruits.insert(orderUpdateEntity.newIndex, fruit);
           }
+          setState(() {
+          });
         },
         builder: (children) {
           return GridView(
