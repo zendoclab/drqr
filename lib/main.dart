@@ -945,17 +945,15 @@ class _MyHomePageState extends State<MyHomePage> {
         children: generatedChildren,
         onReorder: (List<OrderUpdateEntity> orderUpdateEntities) {
           for (final orderUpdateEntity in orderUpdateEntities) {
-            final temp = links?[orderUpdateEntity.oldIndex];
-            links?[orderUpdateEntity.oldIndex] =
-            links?[orderUpdateEntity.newIndex];
-            links?[orderUpdateEntity.newIndex] = temp;
+
+            final link = links?.removeAt(orderUpdateEntity.oldIndex);
+            links?.insert(orderUpdateEntity.newIndex, link);
             linktoqrcode?.put('links', links);
-            links = linktoqrcode?.get('links');
             final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
             _fruits.insert(orderUpdateEntity.newIndex, fruit);
           }
           setState(() {
-          });
+            links = linktoqrcode?.get('links');});
         },
         builder: (children) {
           return GridView(
