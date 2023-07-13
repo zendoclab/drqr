@@ -16,7 +16,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:share_plus/share_plus.dart';
 
-late Box? linktoqrcode;
+late Box linktoqrcode;
 late FirebaseFirestore db;
 
 void main() async {
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<String> _fruits = [];
-  late List? links;
+  List? links;
   final _gridViewKey = GlobalKey();
   final _scrollController = ScrollController();
   final formKey = GlobalKey<FormState>();
@@ -97,14 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    links = linktoqrcode.get('links');
+    _fruits.addAll(links?.map((e) => e['subject']) ?? []);
     super.initState();
-    if (linktoqrcode.isNull) {
-      links = null;
-    } else {
-      links = linktoqrcode?.get('links');
-      _fruits.addAll(links?.map((e) => e['subject']) ?? []);
     }
-  }
 
   @override
   void dispose() {
@@ -112,6 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller2.dispose();
     _controller3.dispose();
     _controller4.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -175,11 +172,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   icon: const Icon(
                                                       Icons.close),
                                                   onPressed: () {
-                                                    setState(() {
-                                                      _checkVal =
-                                                          _checkVal2 =
-                                                          _edit = false;
-                                                    });
                                                     Navigator.pop(context,
                                                         'links to qrcode');
                                                   }),
@@ -360,6 +352,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 "snap": snapId
                                                               }
                                                             ];
+                                                            linktoqrcode.put(
+                                                                'links', links);
                                                           } else {
                                                             links?.add({
                                                               "subject":
@@ -372,6 +366,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               "date": _id,
                                                               "snap": snapId
                                                             });
+                                                            linktoqrcode.put(
+                                                                'links', links);
                                                           }
                                                         });
                                                       }
@@ -406,9 +402,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         }
                                                       }
 
-                                                      linktoqrcode?.put(
-                                                          'links', links);
-
                                                       ScaffoldMessenger.of(
                                                           context)
                                                           .showSnackBar(
@@ -430,9 +423,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         _fruits.add(
                                                             _controller
                                                                 .text);
-
+                                                        linktoqrcode.put(
+                                                            'links', links);
                                                         links = linktoqrcode
-                                                            ?.get('links');
+                                                            .get('links');
                                                       });
                                                       Navigator.pop(
                                                           context, '');
@@ -463,7 +457,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () {
                   shareText = links?.map((e) => "${e['subject']} ${e['web']}\n").join();
                   if (shareText!.length>0) {
-                    Share.share(subject: 'drqr', shareText!);
+                    Share.share(subject: 'drqr', shareText! + "${linktoqrcode.get("links").toString()}");
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       duration: const Duration(seconds: 1),
@@ -509,12 +503,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   icon: const Icon(
                                                       Icons.close),
                                                   onPressed: () {
-                                                    setState(() {
-                                                      _checkVal =
-                                                          _checkVal2 =
-                                                          _edit =
-                                                      false;
-                                                    });
                                                     Navigator.pop(
                                                         context,
                                                         'links to qrcode');
@@ -758,10 +746,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               links?.removeAt(
                                                                   index);
 
-                                                              linktoqrcode?.put(
-                                                                  'links',
-                                                                  links);
-
                                                               ScaffoldMessenger.of(context)
                                                                   .showSnackBar(
                                                                 SnackBar(
@@ -773,8 +757,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               setState(
                                                                       () {
                                                                     _fruits.removeAt(index);
+                                                                    linktoqrcode.put(
+                                                                        'links',
+                                                                        links);
                                                                     links =
-                                                                        linktoqrcode?.get('links');
+                                                                        linktoqrcode.get('links');
                                                                   });
                                                             }
                                                             Navigator.pop(
@@ -855,10 +842,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 };
                                                               }
 
-                                                              linktoqrcode?.put(
-                                                                  'links',
-                                                                  links);
-
                                                               ScaffoldMessenger.of(context)
                                                                   .showSnackBar(
                                                                 SnackBar(
@@ -872,8 +855,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                     _fruits[index] =
                                                                         _controller3.text;
 
+                                                                    linktoqrcode.put(
+                                                                        'links',
+                                                                        links);
                                                                     links =
-                                                                        linktoqrcode?.get('links');
+                                                                        linktoqrcode.get('links');
                                                                   });
 
                                                               Navigator.pop(
@@ -902,7 +888,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       context: context);
                 },
                 child: Text(
-                    "${_fruits.elementAt(index)}:$index",
+                    _fruits.elementAt(index),
                     style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme
@@ -948,12 +934,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
             final link = links?.removeAt(orderUpdateEntity.oldIndex);
             links?.insert(orderUpdateEntity.newIndex, link);
-            linktoqrcode?.put('links', links);
+            linktoqrcode.put('links', links);
             final fruit = _fruits.removeAt(orderUpdateEntity.oldIndex);
             _fruits.insert(orderUpdateEntity.newIndex, fruit);
           }
           setState(() {
-            links = linktoqrcode?.get('links');});
+            links = linktoqrcode.get('links');});
         },
         builder: (children) {
           return GridView(
