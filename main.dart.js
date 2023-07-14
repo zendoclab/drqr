@@ -40372,11 +40372,11 @@ s.pf(A.a9(["links",r.f],t.z,s.$ti.c))
 r.f=$.h3.aO().bt(0,"links")},
 $S:0}
 A.ala.prototype={
-$0(){var s=null,r=this.a,q=r.f
-q=q==null?s:J.eA(q,new A.al7(),t.N).mD(0)
-r.ch=q
-if(q.length>0)$.aDs().n3(0,q,s,"drqr")
-else{r=this.b.ai(t.Pu)
+$0(){var s=null,r=this.a,q=r.f,p=q==null
+if(!(p||q===null))r.ch=p?s:J.eA(q,new A.al7(),t.N).mD(0)
+r=r.ch
+if(!(r==null||r===null)){r.toString
+$.aDs().n3(0,r,s,"drqr")}else{r=this.b.ai(t.Pu)
 r.toString
 q=this.c
 r.f.ue(A.Nf(s,s,s,s,s,B.Z,s,q.gcE(q)==="ko"?B.a65:B.a68,B.dI,B.bv,s,s,s,s,s,s,s,s))}},
