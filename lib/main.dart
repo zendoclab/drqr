@@ -15,9 +15,17 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:firebase_pagination/firebase_pagination.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 late Box linktoqrcode;
 late FirebaseFirestore db;
+
+Future<void> _launchUrl(_url) async {
+  if (!await launchUrl(_url)) {
+    throw Exception('Could not launch $_url');
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,7 +109,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     links = linktoqrcode.get('links');
     _fruits.addAll(links?.map((e) => e['subject']) ?? []);
-    _infiniteController = ScrollController()..addListener(_nextLoad);
+    db.collection("drqr").where("subject", isEqualTo: "동물").get().then((doc)
+    {
+      setState(() {
+        for (var doc in doc.docs) {
+          _albumList.add(doc);
+        }
+      });
+    });
     super.initState();
     }
 
@@ -113,7 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller4.dispose();
     _controller5.dispose();
     _scrollController.dispose();
-    _infiniteController.removeListener(_nextLoad);
     super.dispose();
   }
 
@@ -135,63 +149,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int _page = 1;
-  final int _limit = 20;
+  final int _limit = 10;
   bool _hasNextPage = true;
   bool _isFirstLoadRunning = false;
   bool _isLoadMoreRunning = false;
-  List _albumList = [{"id" : "1", "title": "good"}, {"id" : "2", "title": "bad"}];
-  late ScrollController _infiniteController;
+  List _albumList = [];
+  List _queryText = [];
 
-  void _initLoad() async {
-    setState(() {
-      _isFirstLoadRunning = true;
-    });
+  void _initLoad(queryText) {
     try {
-      // final res = await http.get(Uri.parse("$_url?_page=$_page&_limit=$_limit"));
-      setState(() {
-        // _albumList = json.decode(res.body);
+      final res = db.collection("drqr").where("subject", isEqualTo: queryText).get().then((doc)
+      {
+      for (var doc in doc.docs) {
+          _albumList.add(doc);
+    }
       });
+          _queryText = queryText;
     } catch (e) {
       print(e.toString());
-    }
-
-    setState(() {
-      _isFirstLoadRunning = false;
-    });
-  }
-
-  void _nextLoad() async {
-    if (_hasNextPage &&
-        !_isFirstLoadRunning &&
-        !_isLoadMoreRunning &&
-        _infiniteController.position.extentAfter < 100) {
-      setState(() {
-        _isLoadMoreRunning = true;
-      });
-      _page += 1;
-/*
-      try {
-        // final res = await http.get(Uri.parse("$_url?_page=$_page&_limit=$_limit"));
-
-        final List fetchedPosts = json.decode(res.body);
-        if (fetchedPosts.isNotEmpty) {
-          setState(() {
-            _albumList.addAll(fetchedPosts);
-          });
-        } else {
-          // This means there is no more data
-          // and therefore, we will not send another GET request
-          setState(() {
-            _hasNextPage = false;
-          });
-        }
-      } catch (e) {
-        print(e.toString());
-      }
-*/
-      setState(() {
-        _isLoadMoreRunning = false;
-      });
     }
   }
 
@@ -559,8 +534,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(6.0,0.0,8.0,0.0),
                                     child: ElevatedButton(
-                                      onPressed: () {
-                                        _initLoad();
+                                      onPressed: () async {
+                                        var queryText = _controller5.text.split(' ');
+
                                         SideSheet.right(
                                             sheetColor: Theme.of(context).colorScheme.surface,
                                             sheetBorderRadius: 16.0,
@@ -588,33 +564,52 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ),
                                           const Divider(),
                                         Expanded(
-                                        child: ListView.builder(
-                                        controller: _infiniteController,
-                                        itemCount: _albumList.length,
-                                        itemBuilder: (context, index) => Card(
-                                        margin: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 10),
-                                        child: ListTile(
-                                        title: Text(_albumList[index]['id'].toString()),
-                                        subtitle: Text(_albumList[index]['title']),
-                                        ),
-                                        ),
-                                        ),
-                                        ),
-                                        if (_isLoadMoreRunning == true)
-                                        Container(
-                                        padding: const EdgeInsets.all(30),
-                                        child: const Center(
-                                        child: CircularProgressIndicator(),
-                                        ),
-                                        ),
-                                        if (_hasNextPage == false)
-                                        Container(
-                                        padding: const EdgeInsets.all(20),
-                                        color: Colors.blue,
-                                        child: const Center(
-                                        child: Text('No more data to be fetched.',
-                                        style: TextStyle(color: Colors.white)),
+                                        child: FirestorePagination(
+                                          query: db.collection('drqr').orderBy('vote', descending: true),
+                                          itemBuilder: (context, documentSnapshot, index) {
+                                            final data = documentSnapshot.data() as Map<String, dynamic>;
+                                            var dlength = data.length;
+                                            var _count= 0;
+                                            if(queryText.any((e) => data['subject'].contains(e))) {
+                                                _count=_count+1;
+                                            return Card(
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: 2, horizontal: 4),
+                                              child: ListTile(
+                                                title: Text(data['subject'].toString()),
+                                                subtitle: GestureDetector(child: Text(data['web']), onTap: () => _launchUrl(Uri.parse(data['web']))),
+                                                leading: IconButton(onPressed: () {
+                                                  myState(() {
+                                                    _controller.text = data['subject'];
+                                                    _controller2.text = data['web'];
+                                                    _checkVal=false;
+                                                  });
+                                                  Navigator.pop(
+                                                      context, '');
+                                                }, icon: Icon(Icons.copy)),
+                                                trailing: IconButton(onPressed: () => _launchUrl(Uri.parse(data['web'])), icon: Icon(Icons.arrow_forward)),
+                                              ),
+                                            );
+                                            }
+                                            else {
+
+                                              if(index==dlength-2 && _count==0)
+                                              {
+                                                return Card(
+                                                  margin: EdgeInsets.symmetric(
+                                                      vertical: 2, horizontal: 4),
+                                                  child: ListTile(
+                                                    title: locale.languageCode ==
+                                                        'ko'
+                                                        ? const Text('검색 결과 없음')
+                                                        : const Text(
+                                                        'No Search Result'),
+                                                  ),
+                                                );
+                                              }
+                                              return Container(height: 0.0, width: 0.0,);
+                                            }
+                                          },
                                         ),
                                         ),
                                         ],
@@ -1102,8 +1097,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Tooltip(
               message: locale.languageCode == 'ko'
-                  ? '고객에게 QR코드로 웹페이지의 정보를 전달하세요\n링크목록은 웹브라우저에 영구적으로 저장됩니다\n링크박스를 길게 누르면 목록순서를 바꿀 수 있습니다'
-                  : 'Give customers information from webpage with QR Codes\nList of links is permanently stored in the web browser\nYou can change the order of list by long-pressing the link box',
+                  ? '고객에게 QR코드로 웹페이지의 정보를 전달하세요\n등록된 링크목록은 웹브라우저에 계속 저장됩니다\n링크박스를 길게 누르면 목록순서를 바꿀 수 있습니다'
+                  : 'Give customers information from webpage with QR Codes\nList of registered links is still saved in web browser\nYou can change the order of list by long-pressing the link box',
               child: Align(
                   alignment: Alignment.topRight,
                   child: Icon(Icons.info_outline,
