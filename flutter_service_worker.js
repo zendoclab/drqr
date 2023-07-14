@@ -29,9 +29,9 @@ const RESOURCES = {"android-chrome-192x192.png": "8ddabb61dc8c6e42b391842e898508
 "icons/Icon-512.png": "f62a8e4ffbf4fc7e3cd4bab1c12b293e",
 "icons/Icon-maskable-192.png": "df285a3109d34151aa92a9f2b066cdb7",
 "icons/Icon-maskable-512.png": "f62a8e4ffbf4fc7e3cd4bab1c12b293e",
-"index.html": "1a1c85f82c5d7540af96d0d04cf3aeff",
-"/": "1a1c85f82c5d7540af96d0d04cf3aeff",
-"main.dart.js": "16fd944b6cf60433809e87ed6e665ba3",
+"index.html": "6c9a908fd7197267d3d55a12326236c6",
+"/": "6c9a908fd7197267d3d55a12326236c6",
+"main.dart.js": "31b09a7b749454f67863a33d07dea2b9",
 "manifest.json": "594b120a2ac26e0c779f600fe1e24cf0",
 "site.webmanifest": "053100cb84a50d2ae7f5492f7dd7f25e",
 "version.json": "848f80f417a8b8892ef30c2fee89b198"};
