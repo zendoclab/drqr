@@ -624,8 +624,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Theme.of(context).colorScheme.outlineVariant,
             child: InkResponse(
                 onTap: () {
-                  shareText = links?.map((e) => "${e['subject']} ${e['web']}\n").join();
-                  if (shareText!.length>0) {
+                  if(!links.isNull) {
+                    shareText =
+                        links?.map((e) => "${e['subject']} ${e['web']}\n")
+                            .join();
+                  }
+                  if (!shareText.isNull) {
                     Share.share(subject: 'drqr', shareText!);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
