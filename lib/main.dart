@@ -109,14 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     links = linktoqrcode.get('links');
     _fruits.addAll(links?.map((e) => e['subject']) ?? []);
-    db.collection("drqr").where("subject", isEqualTo: "동물").get().then((doc)
-    {
-      setState(() {
-        for (var doc in doc.docs) {
-          _albumList.add(doc);
-        }
-      });
-    });
     super.initState();
     }
 
@@ -148,28 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return "${DateTime.now().toIso8601String().replaceAll(RegExp(r'[^0-9]'), '')}:${getRandomString(17)}";
   }
 
-  int _page = 1;
-  final int _limit = 10;
-  bool _hasNextPage = true;
-  bool _isFirstLoadRunning = false;
-  bool _isLoadMoreRunning = false;
-  List _albumList = [];
-  List _queryText = [];
   bool _searchable = false;
-
-  void _initLoad(queryText) {
-    try {
-      final res = db.collection("drqr").where("subject", isEqualTo: queryText).get().then((doc)
-      {
-      for (var doc in doc.docs) {
-          _albumList.add(doc);
-    }
-      });
-          _queryText = queryText;
-    } catch (e) {
-      print(e.toString());
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,12 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             StatefulBuilder(
                                                               builder:
                                                                   (BuildContext context,
-                                                                  StateSetter myState3) =>
-                                                              _isFirstLoadRunning
-                                                                  ? const Center(
-                                                                child: CircularProgressIndicator(),
-                                                              )
-                                                                  : Column(
+                                                                  StateSetter myState3) => Column(
                                                                 children: [
                                                                   Align(alignment: Alignment.centerLeft,
                                                                     child: IconButton(
@@ -310,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                         if(queryText.any((e) => data['subject'].contains(e))) {
                                                                           _count=_count+1;
                                                                           return Card(
-                                                                            margin: EdgeInsets.symmetric(
+                                                                            margin: const EdgeInsets.symmetric(
                                                                                 vertical: 2, horizontal: 4),
                                                                             child: ListTile(
                                                                               title: Text(data['subject'].toString()),
@@ -323,8 +289,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                                 });
                                                                                 Navigator.pop(
                                                                                     context, '');
-                                                                              }, icon: Icon(Icons.copy)),
-                                                                              trailing: IconButton(onPressed: () => _launchUrl(Uri.parse(data['web'])), icon: Icon(Icons.arrow_forward)),
+                                                                              }, icon: const Icon(Icons.copy)),
+                                                                              trailing: IconButton(onPressed: () => _launchUrl(Uri.parse(data['web'])), icon: const Icon(Icons.arrow_forward)),
                                                                             ),
                                                                           );
                                                                         }
@@ -333,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                           if(index==dlength-2 && _count==0)
                                                                           {
                                                                             return Card(
-                                                                              margin: EdgeInsets.symmetric(
+                                                                              margin: const EdgeInsets.symmetric(
                                                                                   vertical: 2, horizontal: 4),
                                                                               child: ListTile(
                                                                                 title: locale.languageCode ==
@@ -344,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                               ),
                                                                             );
                                                                           }
-                                                                          return Container(height: 0.0, width: 0.0,);
+                                                                          return const SizedBox(height: 0.0, width: 0.0,);
                                                                         }
                                                                       },
                                                                     ),
@@ -363,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     ),
                                                   )
                                                 ],
-                                              ) : Container(height: 0.0, width: 0.0,),
+                                              ) : const SizedBox(height: 0.0, width: 0.0,),
                                               const SizedBox(height: 16.0),
                                               Card(
 
@@ -492,7 +458,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       ),
                                                     ],
                                                   ),
-                                                  _searchable ? Container(height: 0.0, width: 0.0,) : Padding(
+                                                  _searchable ? const SizedBox(height: 0.0, width: 0.0,) : Padding(
                                                       padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
                                                       child:ElevatedButton(
                                                         onPressed: () {
@@ -733,6 +699,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             fontSize: 16,
                                                             fontWeight: FontWeight.bold)),
                                                   ),
+                                                  Align(
+                                                      alignment:
+                                                      Alignment
+                                                          .center,
+                                                      child:GestureDetector(child: Text(links?[index]['web']), onTap: () => _launchUrl(Uri.parse(links?[index]['web'])))),
                                                   const SizedBox(
                                                       height:
                                                       8.0),
@@ -938,9 +909,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               formKey2
                                                                   .currentState
                                                                   ?.save();
-
-                                                              var _id =
-                                                              _getRanDate();
 
                                                               db
                                                                   .collection("drqr")
