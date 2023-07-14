@@ -268,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   const Divider(),
                                                                   Expanded(
                                                                     child: FirestorePagination(
-                                                                      query: db.collection('drqr').orderBy('vote', descending: true),
+                                                                      query: db.collection('drqr'),
                                                                       itemBuilder: (context, documentSnapshot, index) {
                                                                         final data = documentSnapshot.data() as Map<String, dynamic>;
                                                                         var dlength = data.length;
@@ -295,8 +295,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                           );
                                                                         }
                                                                         else {
-
-                                                                          if(index==dlength-2 && _count==0)
+                                                                          if(index==dlength-1 && _count==0)
                                                                           {
                                                                             return Card(
                                                                               margin: const EdgeInsets.symmetric(
@@ -477,11 +476,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
                                                     child: ElevatedButton(
                                                       onPressed: () {
-                                                        _controller5.text='drqr';
+                                                       _controller5.text='drqr';
                                                         if (formKey
                                                             .currentState!
                                                             .validate()) {
-                                                          _controller5.clear();
+                                                        _controller5.clear();
                                                           formKey.currentState
                                                               ?.save();
 
