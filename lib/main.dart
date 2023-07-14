@@ -155,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoadMoreRunning = false;
   List _albumList = [];
   List _queryText = [];
+  bool _searchable = false;
 
   void _initLoad(queryText) {
     try {
@@ -181,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
             key: Key("$index"),
             height: (((index + 1) % 3) + 1) * 100.0,
             alignment: const Alignment(0, 0),
-            color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.outlineVariant,
             child: InkResponse(
                 onTap: () async {
 
@@ -189,6 +190,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   _controller.clear();
                   _controller2
                       .clear();
+
+                  _searchable=false;
 
                   await SideSheet.right(
                       sheetColor:
@@ -217,7 +220,151 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         'links to qrcode');
                                                   }),
                                               const Divider(),
+                                              const SizedBox(height: 8.0),
+                                              _searchable ? Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                children: [
+                                                  Expanded(flex: 3,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.fromLTRB(8.0,0.0,2.0,0.0),
+                                                      child: TextFormField(
+                                                        keyboardType: TextInputType.text,
+                                                        autovalidateMode:
+                                                        AutovalidateMode.onUserInteraction,
+                                                        controller: _controller5,
+                                                        onSaved: (val) {
+                                                          setState(() {});
+                                                        },
+                                                        validator: (val) {
+                                                          if (val!.isEmpty ||
+                                                              val.length > 20 ||
+                                                              RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
+                                                                  .hasMatch(val)) {
+                                                            return locale
+                                                                .languageCode ==
+                                                                'ko'
+                                                                ? '주제어를 입력하세요 (특수문자 제한)'
+                                                                : 'Enter key words (special characters restricted)';
+                                                          }
+                                                          return null;
+                                                        },
+                                                        onTap: () {
+                                                          if (FocusScope.of(context)
+                                                              .hasFocus) {
+                                                            setState(() {});
+                                                          }
+                                                        },
+                                                        maxLength: 20,
+                                                        maxLengthEnforcement:
+                                                        MaxLengthEnforcement
+                                                            .enforced,
+                                                        decoration:
+                                                        const InputDecoration(
+                                                          border:
+                                                          OutlineInputBorder(),
+                                                          hintText: 'Keywords',
+                                                          helperText: null,
+                                                          labelText: null,
+                                                        ),
+                                                        maxLines: 1,
+                                                      ),
+                                                    ),),
+                                                  Padding(
+                                                    padding: const EdgeInsets.fromLTRB(6.0,0.0,8.0,0.0),
+                                                    child: ElevatedButton(
+                                                      onPressed: () async {
+                                                        var queryText = _controller5.text.split(' ');
 
+                                                        SideSheet.right(
+                                                            sheetColor: Theme.of(context).colorScheme.surface,
+                                                            sheetBorderRadius: 16.0,
+                                                            barrierDismissible: true,
+                                                            width: MediaQuery.of(context).size.width * 0.95,
+                                                            body:
+                                                            StatefulBuilder(
+                                                              builder:
+                                                                  (BuildContext context,
+                                                                  StateSetter myState3) =>
+                                                              _isFirstLoadRunning
+                                                                  ? const Center(
+                                                                child: CircularProgressIndicator(),
+                                                              )
+                                                                  : Column(
+                                                                children: [
+                                                                  Align(alignment: Alignment.centerLeft,
+                                                                    child: IconButton(
+                                                                        icon: const Icon(
+                                                                            Icons.close),
+                                                                        onPressed: () {
+                                                                          Navigator.pop(context,
+                                                                              'links to qrcode');
+                                                                        }),
+                                                                  ),
+                                                                  const Divider(),
+                                                                  Expanded(
+                                                                    child: FirestorePagination(
+                                                                      query: db.collection('drqr').orderBy('vote', descending: true),
+                                                                      itemBuilder: (context, documentSnapshot, index) {
+                                                                        final data = documentSnapshot.data() as Map<String, dynamic>;
+                                                                        var dlength = data.length;
+                                                                        var _count= 0;
+                                                                        if(queryText.any((e) => data['subject'].contains(e))) {
+                                                                          _count=_count+1;
+                                                                          return Card(
+                                                                            margin: EdgeInsets.symmetric(
+                                                                                vertical: 2, horizontal: 4),
+                                                                            child: ListTile(
+                                                                              title: Text(data['subject'].toString()),
+                                                                              subtitle: GestureDetector(child: Text(data['web']), onTap: () => _launchUrl(Uri.parse(data['web']))),
+                                                                              leading: IconButton(onPressed: () {
+                                                                                myState(() {
+                                                                                  _controller.text = data['subject'];
+                                                                                  _controller2.text = data['web'];
+                                                                                  _checkVal=false;
+                                                                                });
+                                                                                Navigator.pop(
+                                                                                    context, '');
+                                                                              }, icon: Icon(Icons.copy)),
+                                                                              trailing: IconButton(onPressed: () => _launchUrl(Uri.parse(data['web'])), icon: Icon(Icons.arrow_forward)),
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        else {
+
+                                                                          if(index==dlength-2 && _count==0)
+                                                                          {
+                                                                            return Card(
+                                                                              margin: EdgeInsets.symmetric(
+                                                                                  vertical: 2, horizontal: 4),
+                                                                              child: ListTile(
+                                                                                title: locale.languageCode ==
+                                                                                    'ko'
+                                                                                    ? const Text('검색 결과 없음')
+                                                                                    : const Text(
+                                                                                    'No Search Result'),
+                                                                              ),
+                                                                            );
+                                                                          }
+                                                                          return Container(height: 0.0, width: 0.0,);
+                                                                        }
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            context: context);
+                                                      },
+                                                      child:
+                                                      locale.languageCode ==
+                                                          'ko'
+                                                          ? const Text('링크 검색')
+                                                          : const Text(
+                                                          'Search Link'),
+                                                    ),
+                                                  )
+                                                ],
+                                              ) : Container(height: 0.0, width: 0.0,),
+                                              const SizedBox(height: 16.0),
                                               Card(
 
                                                   shape: RoundedRectangleBorder(  //모서리를 둥글게 하기 위해 사용
@@ -295,7 +442,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     setState(() {});
                                                   }
                                                 },
-                                                maxLength: 200,
+                                                maxLength: 500,
                                                 decoration:
                                                 const InputDecoration(
                                                   border:
@@ -345,13 +492,30 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       ),
                                                     ],
                                                   ),
+                                                  _searchable ? Container(height: 0.0, width: 0.0,) : Padding(
+                                                      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+                                                      child:ElevatedButton(
+                                                        onPressed: () {
+                                                          myState(() {
+                                                            _searchable = true;
+                                                          });
+                                                        },
+                                                        child:
+                                                        locale.languageCode ==
+                                                            'ko'
+                                                            ? const Text('링크 검색')
+                                                            : const Text(
+                                                            'Search Link'),
+                                                      )),
                                                   Padding(
                                                     padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
                                                     child: ElevatedButton(
                                                       onPressed: () {
+                                                        _controller5.text='drqr';
                                                         if (formKey
                                                             .currentState!
                                                             .validate()) {
+                                                          _controller5.clear();
                                                           formKey.currentState
                                                               ?.save();
 
@@ -477,156 +641,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           : const Text(
                                                           "Add Link"),
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
-                                              ),])),
-
-                                              const SizedBox(height: 16.0),
-                                              const Divider(),
-                                              const SizedBox(height: 8.0),
-                              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(flex: 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(8.0,0.0,2.0,0.0),
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.text,
-                                          autovalidateMode:
-                                          AutovalidateMode.always,
-                                          controller: _controller5,
-                                          onSaved: (val) {
-                                            setState(() {});
-                                          },
-                                          validator: (val) {
-                                            if (val!.isEmpty ||
-                                                val.length > 20 ||
-                                                RegExp(r'[^\u3131-\u3163\uAC00-\uD7A3a-zA-Z0-9,.?!@#$%&* \s]')
-                                                    .hasMatch(val)) {
-                                              return locale
-                                                  .languageCode ==
-                                                  'ko'
-                                                  ? '주제어를 입력하세요 (특수문자 제한)'
-                                                  : 'Enter key words (special characters restricted)';
-                                            }
-                                            return null;
-                                          },
-                                          onTap: () {
-                                            if (FocusScope.of(context)
-                                                .hasFocus) {
-                                              setState(() {});
-                                            }
-                                          },
-                                          maxLength: 20,
-                                          maxLengthEnforcement:
-                                          MaxLengthEnforcement
-                                              .enforced,
-                                          decoration:
-                                          const InputDecoration(
-                                            border:
-                                            OutlineInputBorder(),
-                                            hintText: 'Keywords',
-                                            helperText: null,
-                                            labelText: null,
-                                          ),
-                                          maxLines: 1,
-                                        ),
-                                      ),),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(6.0,0.0,8.0,0.0),
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        var queryText = _controller5.text.split(' ');
-
-                                        SideSheet.right(
-                                            sheetColor: Theme.of(context).colorScheme.surface,
-                                            sheetBorderRadius: 16.0,
-                                            barrierDismissible: true,
-                                            width: MediaQuery.of(context).size.width * 0.95,
-                                            body:
-                                                  StatefulBuilder(
-                                                      builder:
-                                                          (BuildContext context,
-                                                          StateSetter myState3) =>
-                                                _isFirstLoadRunning
-                                                ? const Center(
-                                                child: CircularProgressIndicator(),
-                                        )
-                                            : Column(
-                                        children: [
-                                          Align(alignment: Alignment.centerLeft,
-                                            child: IconButton(
-                                                icon: const Icon(
-                                                    Icons.close),
-                                                onPressed: () {
-                                                  Navigator.pop(context,
-                                                      'links to qrcode');
-                                                }),
-                                          ),
-                                          const Divider(),
-                                        Expanded(
-                                        child: FirestorePagination(
-                                          query: db.collection('drqr').orderBy('vote', descending: true),
-                                          itemBuilder: (context, documentSnapshot, index) {
-                                            final data = documentSnapshot.data() as Map<String, dynamic>;
-                                            var dlength = data.length;
-                                            var _count= 0;
-                                            if(queryText.any((e) => data['subject'].contains(e))) {
-                                                _count=_count+1;
-                                            return Card(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: 2, horizontal: 4),
-                                              child: ListTile(
-                                                title: Text(data['subject'].toString()),
-                                                subtitle: GestureDetector(child: Text(data['web']), onTap: () => _launchUrl(Uri.parse(data['web']))),
-                                                leading: IconButton(onPressed: () {
-                                                  myState(() {
-                                                    _controller.text = data['subject'];
-                                                    _controller2.text = data['web'];
-                                                    _checkVal=false;
-                                                  });
-                                                  Navigator.pop(
-                                                      context, '');
-                                                }, icon: Icon(Icons.copy)),
-                                                trailing: IconButton(onPressed: () => _launchUrl(Uri.parse(data['web'])), icon: Icon(Icons.arrow_forward)),
-                                              ),
-                                            );
-                                            }
-                                            else {
-
-                                              if(index==dlength-2 && _count==0)
-                                              {
-                                                return Card(
-                                                  margin: EdgeInsets.symmetric(
-                                                      vertical: 2, horizontal: 4),
-                                                  child: ListTile(
-                                                    title: locale.languageCode ==
-                                                        'ko'
-                                                        ? const Text('검색 결과 없음')
-                                                        : const Text(
-                                                        'No Search Result'),
-                                                  ),
-                                                );
-                                              }
-                                              return Container(height: 0.0, width: 0.0,);
-                                            }
-                                          },
-                                        ),
-                                        ),
-                                        ],
-                                        ),
-                                                  ),
-                                            context: context);
-                                      },
-                                      child:
-                                      locale.languageCode ==
-                                          'ko'
-                                          ? const Text('링크 검색')
-                                          : const Text(
-                                          'Search Link'),
-                                    ),
-                                  )
-                                ],
-                              ),]))),
+                                              ),])),]))),
                           ],
                         ),
                       ),
@@ -638,12 +655,12 @@ class _MyHomePageState extends State<MyHomePage> {
             key: Key("$index"),
             height: (((index + 1) % 3) + 1) * 100.0,
             alignment: const Alignment(0, 0),
-            color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.outlineVariant,
             child: InkResponse(
                 onTap: () {
                   shareText = links?.map((e) => "${e['subject']} ${e['web']}\n").join();
                   if (shareText!.length>0) {
-                    Share.share(subject: 'drqr', shareText! + "${linktoqrcode.get("links").toString()}");
+                    Share.share(subject: 'drqr', shareText!);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       duration: const Duration(seconds: 1),
@@ -658,7 +675,7 @@ class _MyHomePageState extends State<MyHomePage> {
             key: Key("$index"),
             height: (((index + 1) % 3) + 1) * 100.0,
             alignment: const Alignment(0, 0),
-            color: Theme.of(context).colorScheme.outlineVariant,
+                color: Theme.of(context).colorScheme.surfaceVariant,
             child: InkResponse(
                 onTap: () async {
                   _controller3.text = links?[index]['subject'];
@@ -725,6 +742,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           .center,
                                                       child:
                                                       PrettyQr(
+                                                        // image: AssetImage('assets/twitter.png'),
                                                         typeNumber:
                                                         null,
                                                         size:
@@ -846,7 +864,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 () {});
                                                       }
                                                     },
-                                                    maxLength: 200,
+                                                    maxLength: 500,
                                                     decoration:
                                                     const InputDecoration(
                                                       border:
